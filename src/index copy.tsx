@@ -16,9 +16,10 @@ const FRIC = 0.98;
 
 // const obList: ob[] = [];
 // obList.push(mag);
-
+let gravi = true;
 export default function Index() {
   const [obList, setObList] = useState<ob[]>([])
+  
   useEffect(() => {
     setObList((prevObList) => {
       const newObList = [...prevObList]
@@ -34,17 +35,6 @@ export default function Index() {
   const GRAV = 20;
 
   function move(){
-    setObList(prevObList => {
-      const newObList = [...prevObList]
-      for(const obj of newObList){
-        obj.x += obj.xv;
-        obj.y += obj.yv;
-      }
-    return newObList;
-    });
-  }
-  function bounds(){
-    //grav();
     console.log(JSON.stringify(obList))
     setObList(prevObList => {
       const newObList = [...prevObList]
@@ -57,12 +47,12 @@ export default function Index() {
         }
         if(obj.y + obj.yv < 0){
           obj.yv = Math.abs(obj.yv);
-          // obj.y = Math.max(0, obj.y + obj.yv);
         }
         if(obj.y + obj.yv >= SCREEN_HEIGHT){
           obj.yv = -Math.abs(obj.yv);
-          // obj.y = Math.min(SCREEN_HEIGHT, obj.y + obj.yv);
-        }  
+        }
+        obj.x += obj.xv;
+        obj.y += obj.yv;
     }
     return newObList;
     });
@@ -76,9 +66,10 @@ export default function Index() {
       for(const obj of newObList){
         obj.yv += GRAV;
     }
-
+    
     return newObList;
     });
+
   }
   function accel(){
     // grav();
@@ -93,20 +84,17 @@ export default function Index() {
 
   }
   function tick(){
-    
-    
-    accel();
-    move();
-    bounds();
-    
+
     grav();
+
+    // accel();
+    move();
 
   }
   useEffect(() => {
     const interval = setInterval(tick, 100);
     return () => clearInterval(interval);
   }, []);
-
 
 
   return (

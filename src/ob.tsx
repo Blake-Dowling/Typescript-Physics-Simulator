@@ -21,7 +21,7 @@ export class ob implements obType{
     constructor(){
         this.x = 100;
         this.y = 0;
-        this.xv = -100;
+        this.xv = 0;
         this.yv = 0;
         this.xa = 0;
         this.ya = 0;
