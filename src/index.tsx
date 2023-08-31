@@ -30,80 +30,59 @@ export default function Index() {
   }, []);
 
 
+  const T = .001;
 
-  const GRAV = 20;
 
   function move(){
     setObList(prevObList => {
       const newObList = [...prevObList]
       for(const obj of newObList){
-        obj.x += obj.xv;
-        obj.y += obj.yv;
+        obj.move(T);
       }
     return newObList;
     });
   }
   function bounds(){
-    //grav();
-    console.log(JSON.stringify(obList))
     setObList(prevObList => {
       const newObList = [...prevObList]
       for(const obj of newObList){
-        if(obj.x + obj.xv < 0){
+        if(obj.x < 0){
+          // obj.x = Math.max(0, obj.x);
           obj.xv = Math.abs(obj.xv);
         }
-        if(obj.x + obj.xv >= SCREEN_WIDTH){
+        if(obj.x >= SCREEN_WIDTH){
+          // obj.x = Math.min(SCREEN_WIDTH, obj.x);
           obj.xv = -Math.abs(obj.xv);
         }
-        if(obj.y + obj.yv < 0){
+        if(obj.y < 0){
+          // obj.y = Math.max(0, obj.y);
           obj.yv = Math.abs(obj.yv);
-          // obj.y = Math.max(0, obj.y + obj.yv);
         }
-        if(obj.y + obj.yv >= SCREEN_HEIGHT){
+        if(obj.y >= SCREEN_HEIGHT){
+          const p = obj.y;
+          // obj.y = Math.min(SCREEN_HEIGHT, obj.y);
           obj.yv = -Math.abs(obj.yv);
-          // obj.y = Math.min(SCREEN_HEIGHT, obj.y + obj.yv);
+          console.log(p - obj.y);
         }  
     }
     return newObList;
     });
 
   }
-  function grav(){
-    
-    setObList(prevObList => {
-      
-      const newObList = [...prevObList]
-      for(const obj of newObList){
-        obj.yv += GRAV;
-    }
 
-    return newObList;
-    });
-  }
-  function accel(){
-    // grav();
-    setObList(prevObList => {
-      const newObList = [...prevObList]
-      for(const obj of newObList){
-        obj.xv += obj.xa;
-        obj.yv += obj.ya;
-    }
-    return newObList;
-    });
 
-  }
   function tick(){
     
-    
-    accel();
     move();
     bounds();
     
-    grav();
+    //bounds();
+    
+
 
   }
   useEffect(() => {
-    const interval = setInterval(tick, 100);
+    const interval = setInterval(tick, T*10000);
     return () => clearInterval(interval);
   }, []);
 

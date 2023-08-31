@@ -19,14 +19,30 @@ export class ob implements obType{
     xa: number;
     ya: number;
     constructor(){
-        this.x = 100;
+        this.x = 0;
         this.y = 0;
         this.xv = 0;
         this.yv = 0;
         this.xa = 0;
-        this.ya = 0;
+        this.ya = 10;
     }
 
+
+    accl(){
+      this.xv += this.xa;
+      this.yv += this.ya;
+    }
+    move(t: number){
+
+      
+      this.x = (0.5 * (this.xa * (t ** 2))) + (this.xv * t) + this.x;
+      this.y = (0.5 * (this.ya * (t ** 2))) + (this.yv * t) + this.y;
+      this.accl();
+
+    }
+    print(){
+      console.log(JSON.stringify(this));
+    }
 };
 
 
@@ -36,7 +52,7 @@ export default function Ob(props:any) {
         position: 'relative',
         top: obj.y,
         left: obj.x - SCREEN_WIDTH/2,
-        filter: `blur(${Math.sqrt(Math.abs(obj.xv+obj.yv)/5)}px)`
+        filter: `blur(${Math.sqrt(Math.abs(obj.xv+obj.yv)/500)}px)`
       } as any;
   return (
     <div style={stylesheet}>{JSON.stringify(props.obj)}</div>
