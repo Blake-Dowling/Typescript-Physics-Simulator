@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import ReactDOM from 'react-dom'
 import './index.css'
+import Text from './text'
+import { ob } from './ob'
+import Ob from './ob'
 
 const SCREEN_HEIGHT = window.innerHeight;
 const SCREEN_WIDTH = window.innerWidth;
@@ -9,83 +12,97 @@ const BOX_WIDTH = 200;
 const FRIC = 0.98;
 
 
-function sleep(ms:number) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
+// const mag = new ob();
 
-
+// const obList: ob[] = [];
+// obList.push(mag);
 
 export default function Index() {
-  const [x, setX] = useState(0);
-  const [y, setY] = useState(0);
-  const [xV, setXV] = useState(-100);
-  const [yV, setYV] = useState(100);
-  const GRAV = 2;
-  const stylesheet = {
-    position: 'relative',
-    top: y,
-    left: x,
-    filter: `blur(${Math.sqrt(Math.abs(xV+yV)/5)}px)`
-  } as any;
+  const [obList, setObList] = useState<ob[]>([])
+  useEffect(() => {
+    setObList((prevObList) => {
+      const newObList = [...prevObList]
+      const newOb :ob = new ob();
+      newObList.push(newOb);
+      return newObList;
+    });
 
-  function handleImpact(){
+  }, []);
 
-  }
-  function fric(){
-    setXV(prevXV => {return prevXV*FRIC});
-    setYV(prevYV => {return prevYV*FRIC});
-  }
+
+
+  const GRAV = 20;
+
   function move(){
-    setX(prevX => {
-      if(-SCREEN_WIDTH/2 > prevX+xV){
-        setXV(prevXV => {return Math.abs(prevXV)});
-        fric();
-      }
-      return Math.max(-SCREEN_WIDTH/2, prevX+xV);
-    });
-    setX(prevX => {
-      if((SCREEN_WIDTH/2)-(BOX_WIDTH/2) <= prevX+xV){
-        setXV(prevXV => {return -Math.abs(prevXV)});
-        fric();
-      }
-      return Math.min((SCREEN_WIDTH/2)-(BOX_WIDTH/2), prevX+xV);
+    console.log(JSON.stringify(obList))
+    setObList(prevObList => {
+      const newObList = [...prevObList]
+      for(const obj of newObList){
+        if(obj.x + obj.xv < 0){
+          obj.xv = Math.abs(obj.xv);
+        }
+        if(obj.x + obj.xv >= SCREEN_WIDTH){
+          obj.xv = -Math.abs(obj.xv);
+        }
+        if(obj.y + obj.yv < 0){
+          obj.yv = Math.abs(obj.yv);
+        }
+        if(obj.y + obj.yv >= SCREEN_HEIGHT){
+          obj.yv = -Math.abs(obj.yv);
+        }
+        obj.x += obj.xv;
+        obj.y += obj.yv;
+    }
+    return newObList;
     });
 
-    setY(prevY => {
-      if(0 > prevY+yV){
-        setYV(prevYV => {return Math.abs(prevYV)});
-        fric();
-      }
-      return Math.max(0, prevY+yV);
-    });
-    setY(prevY => {
-      if(SCREEN_HEIGHT-BOX_WIDTH <= prevY+yV){
-        setYV(prevYV => {return -Math.abs(prevYV)});
-        fric();
-      }
-      return Math.min(SCREEN_HEIGHT-BOX_WIDTH, prevY+yV);
+  }
+  function grav(){
+    
+    setObList(prevObList => {
+      
+      const newObList = [...prevObList]
+      for(const obj of newObList){
+        obj.yv += GRAV;
+    }
+
+    return newObList;
     });
   }
   function accel(){
-    setYV(prevYV => {return prevYV+GRAV});
+    // grav();
+    setObList(prevObList => {
+      const newObList = [...prevObList]
+      for(const obj of newObList){
+        obj.xv += obj.xa;
+        obj.yv += obj.ya;
+    }
+    return newObList;
+    });
 
   }
-  function loop(){
-    accel();
-      
-    move();
+  function tick(){
+    grav();
+    
+    // accel();
+    // move();
+
   }
   useEffect(() => {
-    const interval = setInterval(() =>{ move();accel();}, 10);
+    const interval = setInterval(tick, 100);
     return () => clearInterval(interval);
-  }, [yV]);
-
+  }, []);
+  useEffect(() => {
+    move()
+  }, [obList]);
 
   return (
     <div className="container">
-      <div className="shape" style={stylesheet}>
-
-      </div>
+      {JSON.stringify(obList)}
+      {obList.map(obj => {return (
+        <Ob obj={obj}/>
+      )}
+      )}
     </div>
   )
 }
