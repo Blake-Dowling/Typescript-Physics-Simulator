@@ -18,12 +18,17 @@ const FRIC = 0.98;
 // obList.push(mag);
 
 export default function Index() {
-  const [obList, setObList] = useState<ob[]>([])
+  const [obList, setObList] = useState<ob[]>([]);
+  const [magList, setMagList] = useState<ob[]>([]);
   useEffect(() => {
     setObList((prevObList) => {
       const newObList = [...prevObList]
-      const newOb :ob = new ob();
-      newObList.push(newOb);
+      newObList.push(new ob(200, 200));
+      return newObList;
+    });
+    setMagList((prevObList) => {
+      const newObList = [...prevObList]
+      newObList.push(new ob(300, 300));
       return newObList;
     });
 
@@ -71,12 +76,18 @@ export default function Index() {
   }
 
 
+    obList.map(ob => {
+      magList.map(mag => {
+        ob.calcMag(mag);
+      });
+    });
+
+  
   function tick(){
-    
+    // mag();
     move();
     bounds();
     
-    //bounds();
     
 
 
@@ -90,11 +101,17 @@ export default function Index() {
 
   return (
     <div className="container">
-      {JSON.stringify(obList)}
+      {/* {JSON.stringify(obList)} */}
       {obList.map(obj => {return (
         <Ob obj={obj}/>
       )}
       )}
+      {/* {JSON.stringify(obList)} */}
+      {magList.map(obj => {return (
+        <Ob obj={obj}/>
+      )}
+      )}
+      
     </div>
   )
 }
