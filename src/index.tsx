@@ -69,7 +69,6 @@ export default function Index() {
     const time_until_collision = obj.calcTDY(SCREEN_HEIGHT - obj.y);
     // console.log(time_until_collision)
     if(time_until_collision < T){
-      console.log(ticks)
       ticks = 0;
       obj.move(time_until_collision);
       obj.yv = -Math.abs(obj.yv)

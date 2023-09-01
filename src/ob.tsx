@@ -24,14 +24,14 @@ export class ob implements obType{
         this.xv = 0;
         this.yv = 0;
         this.xa = 0;
-        this.ya = 1000;
+        this.ya = 10000;
     }
 
 
     accl(t: number){
 
-      this.xv += this.xa;
-      this.yv += this.ya;
+      this.xv += this.xa*t;
+      this.yv += this.ya*t;
     }
     calcKE(){
       return (.5*(this.yv**2))
@@ -52,10 +52,12 @@ export class ob implements obType{
     }
     move(t: number){
 
+      this.accl(t);
+
       this.x = (0.5 * (this.xa * (t ** 2))) + (this.xv * t) + this.x;
       this.y = (0.5 * (this.ya * (t ** 2))) + (this.yv * t) + this.y;
+
       
-      this.accl(t);
 
 
     }

@@ -31,3 +31,4 @@ b. if td < TICK:
     with t
 
 Imperfect collision elasticity:
+All parameter changes must be done in order of descending degree.
