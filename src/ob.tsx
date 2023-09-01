@@ -24,34 +24,20 @@ export class ob implements obType{
         this.xv = 0;
         this.yv = 0;
         this.xa = 0;
-        this.ya = 100;
+        this.ya = 1000;
     }
 
 
-    accl(){
+    accl(t: number){
+
       this.xv += this.xa;
       this.yv += this.ya;
     }
+    calcKE(){
+      return (.5*(this.yv**2))
+    }
     calcTDY(dd: number){
-      console.log(dd + ": ")
-      console.log(
-        (-this.yv + (
-                                  Math.sqrt(
-                                    (this.yv**2) - (2*this.ya * (-dd))
-                                  )
-                              ) 
-      )
-       / this.ya
-      )
 
-  //     console.log(-this.yv + (
-  //       Math.sqrt(
-  //          (this.yv**2) - 2*Math.abs(this.ya * dd)
-  //       )
-  //        / this.ya
-  //    )
-  //  );
-      
       const td = (
         (-this.yv + (
                                   Math.sqrt(
@@ -63,14 +49,14 @@ export class ob implements obType{
       )
       
       return td;
-      // return ((-this.y + Math.sqrt(Math.abs(this.yv) + 2*Math.abs(this.ya)*Math.abs(dd))) / this.ya)
     }
     move(t: number){
 
-      
       this.x = (0.5 * (this.xa * (t ** 2))) + (this.xv * t) + this.x;
       this.y = (0.5 * (this.ya * (t ** 2))) + (this.yv * t) + this.y;
-      this.accl();
+      
+      this.accl(t);
+
 
     }
     print(){

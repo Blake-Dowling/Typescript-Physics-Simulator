@@ -23,7 +23,7 @@ export default function Index() {
   useEffect(() => {
     setObList((prevObList) => {
       const newObList = [...prevObList]
-      newObList.push(new ob(200, 200));
+      newObList.push(new ob(500, 500));
       return newObList;
     });
     setMagList((prevObList) => {
@@ -35,15 +35,17 @@ export default function Index() {
   }, []);
 
 
-  const T = .001;
+  const T = .01;
 
-
+  let ticks = 0;
   function move(){
 
     setObList(prevObList => {
       const newObList = [...prevObList]
       for(const obj of newObList){
+        ticks += 1;
         if(!bounds(obj, T)){
+
           obj.move(T);
         }
         
@@ -67,11 +69,12 @@ export default function Index() {
     const time_until_collision = obj.calcTDY(SCREEN_HEIGHT - obj.y);
     // console.log(time_until_collision)
     if(time_until_collision < T){
-      // console.log(obj.y)
+      console.log(ticks)
+      ticks = 0;
       obj.move(time_until_collision);
       obj.yv = -Math.abs(obj.yv)
       obj.move(T - time_until_collision);
-      // console.log(obj.y)
+
       return true;
     }
 

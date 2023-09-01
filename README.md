@@ -18,7 +18,7 @@ Move Function:
 1. Collision detection 
 a. calculate time delta at which y = bound (dd = bound - y): 
     bound - y = dd = (a/2)(t**2) + (v * t) + y
-    td = (-y (+-) sqrt(v**2 2a(dd))) / a
+    td = (-v (+) sqrt(v**2 * 2a(-dd))) / a
 
 
 b. if td < TICK:
@@ -29,3 +29,5 @@ b. if td < TICK:
 1. ELSE
     i. move obj using time-parameterized motion function d = (a/2)(t**2)+vt+y
     with t
+
+Imperfect collision elasticity:
