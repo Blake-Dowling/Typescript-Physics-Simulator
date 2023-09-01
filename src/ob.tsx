@@ -24,13 +24,17 @@ export class ob implements obType{
         this.xv = 0;
         this.yv = 0;
         this.xa = 0;
-        this.ya = 0;
+        this.ya = 10;
     }
 
 
     accl(){
       this.xv += this.xa;
       this.yv += this.ya;
+    }
+    calcTDY(dd: number){
+      console.log(((-this.y + Math.sqrt(Math.abs(this.yv) + 2*Math.abs(this.ya)*Math.abs(dd))) / this.ya));
+      return ((-this.y + Math.sqrt(Math.abs(this.yv) + 2*Math.abs(this.ya)*Math.abs(dd))) / this.ya)
     }
     move(t: number){
 
@@ -45,10 +49,41 @@ export class ob implements obType{
     }
     calcMag(mag: ob){
       //F = k * [(q1*q2)/r**2]
-      this.xa = (-100000)/((mag.x - this.x)**2)
-      this.ya = (-100000)/((mag.y - this.y)**2)
-      console.log(this.xa)
+      try{
+        this.xa = (10000000)/((mag.x - this.x)**2)
+        this.ya = (10000000)/((mag.y - this.y)**2)
+        // console.log(this.xa)
+      } catch{
 
+      }
+    }
+    obCol(obj: ob){
+      const obsize = 50;
+      // from left
+      
+      if(obj.x - this.x <= obsize && obj.x - this.x >= 0){
+        console.log(Math.sqrt(this.xv**2 + this.yv**2))
+        this.xv = -Math.abs(this.xv);
+        // this.x = obj.x - obsize;
+      }
+      // from right
+      if(this.x - obj.x <= obsize && this.x - obj.x >= 0){
+        console.log(Math.sqrt(this.xv**2 + this.yv**2))
+        this.xv = Math.abs(this.xv);
+        // this.x = obj.x + obsize;
+      }
+      // from top
+      if(obj.y - this.y <= obsize && obj.y - this.y >=0 ){
+        console.log(Math.sqrt(this.xv**2 + this.yv**2))
+        this.yv = -Math.abs(this.yv);
+        // this.y = obj.y - obsize;
+      }
+      // from bottom
+      if(this.y - obj.y <= obsize && this.y - obj.y >= 0){
+        console.log(Math.sqrt(this.xv**2 + this.yv**2))
+        this.yv = Math.abs(this.yv);
+        // this.y = obj.y + obsize;
+      }
     }
 };
 

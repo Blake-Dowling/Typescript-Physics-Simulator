@@ -35,50 +35,81 @@ export default function Index() {
   }, []);
 
 
-  const T = .001;
+  const T = .1;
 
 
   function move(){
+
     setObList(prevObList => {
       const newObList = [...prevObList]
       for(const obj of newObList){
-        obj.move(T);
+        if(!bounds(obj, T)){
+          obj.move(T);
+        }
+        
       }
     return newObList;
     });
   }
-  function bounds(){
-    setObList(prevObList => {
-      const newObList = [...prevObList]
-      for(const obj of newObList){
-        if(obj.x < 0){
-          // obj.x = Math.max(0, obj.x);
-          obj.xv = Math.abs(obj.xv);
-        }
-        if(obj.x >= SCREEN_WIDTH){
-          // obj.x = Math.min(SCREEN_WIDTH, obj.x);
-          obj.xv = -Math.abs(obj.xv);
-        }
-        if(obj.y < 0){
-          // obj.y = Math.max(0, obj.y);
-          obj.yv = Math.abs(obj.yv);
-        }
-        if(obj.y >= SCREEN_HEIGHT){
-          const p = obj.y;
-          // obj.y = Math.min(SCREEN_HEIGHT, obj.y);
-          obj.yv = -Math.abs(obj.yv);
-          console.log(p - obj.y);
-        }  
+  function bounds(obj: ob, T: number){
+    // if(obj.x < 0){
+    //   // obj.x = Math.max(0, obj.x);
+    //   obj.xv = Math.abs(obj.xv);
+    // }
+    // if(obj.x >= SCREEN_WIDTH){
+    //   // obj.x = Math.min(SCREEN_WIDTH, obj.x);
+    //   obj.xv = -Math.abs(obj.xv);
+    // }
+    // if(obj.y < 0){
+    //   // obj.y = Math.max(0, obj.y);
+    //   obj.yv = Math.abs(obj.yv);
+    // }
+    const time_until_collision = obj.calcTDY(SCREEN_HEIGHT - obj.y);
+    // console.log(time_until_collision)
+    if(time_until_collision < T){
+      // console.log(obj.y)
+      obj.move(time_until_collision);
+      obj.yv = -Math.abs(obj.yv)
+      obj.move(T - time_until_collision);
+      // console.log(obj.y)
+      return true;
     }
-    return newObList;
-    });
 
+    return false;
   }
+  // function bounds(){
+  //   setObList(prevObList => {
+  //     const newObList = [...prevObList]
+  //     for(const obj of newObList){
+  //       if(obj.x < 0){
+  //         // obj.x = Math.max(0, obj.x);
+  //         obj.xv = Math.abs(obj.xv);
+  //       }
+  //       if(obj.x >= SCREEN_WIDTH){
+  //         // obj.x = Math.min(SCREEN_WIDTH, obj.x);
+  //         obj.xv = -Math.abs(obj.xv);
+  //       }
+  //       if(obj.y < 0){
+  //         // obj.y = Math.max(0, obj.y);
+  //         obj.yv = Math.abs(obj.yv);
+  //       }
+  //       if(obj.y >= SCREEN_HEIGHT){
+  //         const p = obj.y;
+  //         // obj.y = Math.min(SCREEN_HEIGHT, obj.y);
+  //         obj.yv = -Math.abs(obj.yv);
+  //         // console.log(p - obj.y);
+  //       }  
+  //   }
+  //   return newObList;
+  //   });
+
+  // }
 
 
     obList.map(ob => {
       magList.map(mag => {
-        ob.calcMag(mag);
+        // ob.calcMag(mag);
+        // ob.obCol(mag);
       });
     });
 
@@ -86,7 +117,7 @@ export default function Index() {
   function tick(){
     // mag();
     move();
-    bounds();
+
     
     
 
