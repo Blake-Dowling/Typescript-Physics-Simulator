@@ -24,7 +24,7 @@ export class ob implements obType{
         this.xv = 0;
         this.yv = 0;
         this.xa = 0;
-        this.ya = 10;
+        this.ya = 100;
     }
 
 
@@ -33,8 +33,37 @@ export class ob implements obType{
       this.yv += this.ya;
     }
     calcTDY(dd: number){
-      console.log(((-this.y + Math.sqrt(Math.abs(this.yv) + 2*Math.abs(this.ya)*Math.abs(dd))) / this.ya));
-      return ((-this.y + Math.sqrt(Math.abs(this.yv) + 2*Math.abs(this.ya)*Math.abs(dd))) / this.ya)
+      console.log(dd + ": ")
+      console.log(
+        (-this.yv + (
+                                  Math.sqrt(
+                                    (this.yv**2) - (2*this.ya * (-dd))
+                                  )
+                              ) 
+      )
+       / this.ya
+      )
+
+  //     console.log(-this.yv + (
+  //       Math.sqrt(
+  //          (this.yv**2) - 2*Math.abs(this.ya * dd)
+  //       )
+  //        / this.ya
+  //    )
+  //  );
+      
+      const td = (
+        (-this.yv + (
+                                  Math.sqrt(
+                                    (this.yv**2) - (2*this.ya * (-dd))
+                                  )
+                              ) 
+         )                    
+       / this.ya
+      )
+      
+      return td;
+      // return ((-this.y + Math.sqrt(Math.abs(this.yv) + 2*Math.abs(this.ya)*Math.abs(dd))) / this.ya)
     }
     move(t: number){
 

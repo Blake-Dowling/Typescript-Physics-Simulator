@@ -35,7 +35,7 @@ export default function Index() {
   }, []);
 
 
-  const T = .1;
+  const T = .001;
 
 
   function move(){
