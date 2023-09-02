@@ -3,6 +3,12 @@ import React from 'react'
 const SCREEN_HEIGHT = window.innerHeight;
 const SCREEN_WIDTH = window.innerWidth;
 
+function round(x: number, places: number) : number{
+  x = Math.round(x * (10 ** places));
+  x = x / (10 ** places);
+  return x;
+}
+
 type obType = {
   x: number;
   y: number;
@@ -36,23 +42,39 @@ export class ob implements obType{
     calcKE(){
       return (.5*(this.yv**2))
     }
-    calcTDY(dd: number){
 
-      const td = (
-        (-this.yv + (
-                                  Math.sqrt(
-                                    (this.yv**2) - (2*this.ya * (-dd))
-                                  )
-                              ) 
-         )                    
-       / this.ya
-      )
-      
+    calcDDY(td: number){
+      return ((0.5 * (this.ya * (td ** 2))) + (this.yv * td));
+    }
+    calcTDY(dd: number){
+      let td = 0;
+      if(dd < 0){
+        td = (
+          (-this.yv - (
+                                    Math.sqrt(
+                                      (this.yv**2) - (2*this.ya * (-dd))
+                                    )
+                                ) 
+          )                    
+        / this.ya
+        )
+      }
+      else if(dd >= 0){
+        td = (
+          (-this.yv + (
+                                    Math.sqrt(
+                                      (this.yv**2) - (2*this.ya * (-dd))
+                                    )
+                                ) 
+          )                    
+        / this.ya
+        )
+      }
       return td;
     }
     move(t: number){
 
-      this.accl(t);
+      // this.accl(t);
 
       this.x = (0.5 * (this.xa * (t ** 2))) + (this.xv * t) + this.x;
       this.y = (0.5 * (this.ya * (t ** 2))) + (this.yv * t) + this.y;

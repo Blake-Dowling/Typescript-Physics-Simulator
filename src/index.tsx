@@ -4,6 +4,7 @@ import './index.css'
 import Text from './text'
 import { ob } from './ob'
 import Ob from './ob'
+import { time } from 'console'
 
 const SCREEN_HEIGHT = window.innerHeight;
 const SCREEN_WIDTH = window.innerWidth;
@@ -35,15 +36,24 @@ export default function Index() {
   }, []);
 
 
-  const T = .01;
+  const T = .1;
 
   let ticks = 0;
   function move(){
 
+//     500
+// 570.511141929491
+// 637.0981420390118
+// 699.883527131691
+// 759.8968960322061
     setObList(prevObList => {
       const newObList = [...prevObList]
       for(const obj of newObList){
-        ticks += 1;
+        // if(Math.abs(obj.yv) < 50){
+        //   // console.log(obj.y)
+        // }
+        obj.accl(T);
+        // console.log(obj.yv);
         if(!bounds(obj, T)){
 
           obj.move(T);
@@ -66,13 +76,22 @@ export default function Index() {
     //   // obj.y = Math.max(0, obj.y);
     //   obj.yv = Math.abs(obj.yv);
     // }
-    const time_until_collision = obj.calcTDY(SCREEN_HEIGHT - obj.y);
+    const time_until_collision = Math.sqrt(2* (SCREEN_HEIGHT - obj.y) / obj.ya);//obj.calcTDY(SCREEN_HEIGHT - obj.y);
+
+
+    console.log(time_until_collision)
+    // console.log("td", time_until_collision)
+    
     // console.log(time_until_collision)
     if(time_until_collision < T){
-      ticks = 0;
+      obj.yv -= obj.ya*(T-time_until_collision)
       obj.move(time_until_collision);
+      
+      obj.yv += obj.ya*(T-time_until_collision)
       obj.yv = -Math.abs(obj.yv)
+
       obj.move(T - time_until_collision);
+
 
       return true;
     }
@@ -118,6 +137,7 @@ export default function Index() {
   
   function tick(){
     // mag();
+
     move();
 
     
