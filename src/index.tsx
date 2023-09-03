@@ -50,7 +50,10 @@ export default function Index() {
           for(let j=0; j<newObList.length; j++){
             if(j != i){
               const obj_other = newObList[j];
-              console.log(obj.calcTD2(Dir.y, obj, obj_other, 30))
+              let ttc = obj.calcTD2(Dir.y, obj, obj_other, 30)
+              if(ttc < T){
+                obj.collision(Dir.y, obj, obj_other)
+              }
               // collision = obj.bounds(Dir.y, T, obj_other.y)
               //   || obj.bounds(Dir.x, T, obj_other.x);
               // if(collision){

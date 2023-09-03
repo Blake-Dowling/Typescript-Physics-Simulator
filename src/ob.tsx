@@ -26,7 +26,7 @@ export class ob{
         this.xv = 0;
         this.yv = 0;
         this.xa = 0;
-        this.ya = 10000;
+        this.ya = -10000;
     }
 
 
@@ -39,7 +39,48 @@ export class ob{
     calcDDY(td: number){
       return ((0.5 * (this.ya * (td ** 2))) + (this.yv * td));
     }
-
+    collision(dir: Dir, obj1: ob, obj2: ob){
+      let v1 = 0;
+      let v2 = 0;
+      if(dir === Dir.x){
+        v1 = obj1.xv;
+        v2 = obj2.xv;
+      }
+      else if(dir === Dir.y){
+        v1 = obj1.yv;
+        v2 = obj2.yv;
+      }
+      else{
+        return;
+      }
+      const mass1 = 1;
+      const mass2 = 1;
+      const M = (mass1 * v1) + (mass2 * v1);
+      const K = (.5*mass1) * (v1**2) + (0.5*mass2) * (v2**2)
+      let vf2_plus = (
+                  (
+                    2*M*mass2 + Math.sqrt(
+                                          ((-2*M*mass2)**2) - (4*(mass2**2 + mass2)*(-2*K*mass1 + (M**2)))
+                                          )
+                  )
+                  / (2 * ((mass2**2) + mass2))
+                )
+                let vf2_minus = (
+                  (
+                    2*M*mass2 - Math.sqrt(
+                                          ((-2*M*mass2)**2) - (4*(mass2**2 + mass2)*(-2*K*mass1 + (M**2)))
+                                          )
+                  )
+                  / (2 * ((mass2**2) + mass2))
+                )
+                console.log(vf2_minus, vf2_plus)
+      let vf2 = Math.min(vf2_minus, vf2_plus)
+      let vf1 = (M - (mass2*vf2)) / mass1
+      // console.log(v1, v2)
+      // console.log(vf1-v1,vf2-v2)
+      obj1.yv = vf1;
+      obj2.yv = vf2;
+    }
     calcTD2(dir: Dir, obj1: ob, obj2: ob, dd: number){
 
       let d = 0;
