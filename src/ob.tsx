@@ -13,7 +13,7 @@ function round(x: number, places: number) : number{
 
 
 export class ob{
-
+    collided : boolean = false;
     x: number;
     y: number;
     xv: number;
@@ -26,7 +26,7 @@ export class ob{
         this.xv = 0;
         this.yv = 0;
         this.xa = 0;
-        this.ya = -10000;
+        this.ya = 10000;
     }
 
 

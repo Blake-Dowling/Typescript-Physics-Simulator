@@ -39,20 +39,31 @@ export default function Index() {
       const newObList = [...prevObList]
       for(let i=0; i<newObList.length; i++){
         const obj = newObList[i];
-        let collision = false;
+        
         //******************** Check and Handle Bound Collision ********************/
-        collision = obj.bounds(Dir.y, T, SCREEN_HEIGHT)
+        obj.collided = obj.bounds(Dir.y, T, SCREEN_HEIGHT)
           || obj.bounds(Dir.y, T, 0)
           || obj.bounds(Dir.x, T, SCREEN_WIDTH)
           || obj.bounds(Dir.x, T, 0);
-        if(!collision)
+        //******************** Check and Handle Object Collision ********************/
+        if(!obj.collided){
 
           for(let j=0; j<newObList.length; j++){
             if(j != i){
               const obj_other = newObList[j];
               let ttc = obj.calcTD2(Dir.y, obj, obj_other, 30)
               if(ttc < T){
+                obj.move(ttc)
+                obj.accl(ttc)
+                obj_other.move(ttc)
+                obj_other.accl(ttc)
                 obj.collision(Dir.y, obj, obj_other)
+                obj.move(T-ttc)
+                obj.accl(T-ttc)
+                obj_other.move(T-ttc)
+                obj_other.accl(T-ttc)
+                obj.collided = true;
+                obj_other.collided = true;
               }
               // collision = obj.bounds(Dir.y, T, obj_other.y)
               //   || obj.bounds(Dir.x, T, obj_other.x);
@@ -61,13 +72,13 @@ export default function Index() {
               // }
             }
           }
-        
+        }
           //******************** Otherwise Simply Move ********************/
-          if(!collision){
+          if(!obj.collided){
             obj.move(T);
             obj.accl(T);
           }
-        
+          obj.collided = false;
       }
     return newObList;
     });
