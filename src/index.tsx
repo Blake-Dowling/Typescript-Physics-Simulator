@@ -37,16 +37,12 @@ export default function Index() {
   }, []);
 
 
-  const T = .01;
+  const T = .001;
   ticks += T;
 
   function move(){
 
-//     500
-// 570.511141929491
-// 637.0981420390118
-// 699.883527131691
-// 759.8968960322061
+
     setObList(prevObList => {
       const newObList = [...prevObList]
       for(const obj of [newObList[0]]){
@@ -61,16 +57,7 @@ export default function Index() {
         }
         
       }
-      // for(const obj of [newObList[1]]){
 
-      //   // obj.y = obj.calcInstPos(ticks);
-        
-      //   if(!bounds(obj, T)){
-
-      //     obj.move(T);
-      //   }
-        
-      // }
     return newObList;
     });
   }
@@ -78,17 +65,13 @@ export default function Index() {
 
     const time_until_collision = obj.calcTDY(SCREEN_HEIGHT - obj.y);
 
+    // const obj.calcTDY()
 
-    // console.log(obj.calcDDY(time_until_collision))
-    // console.log("td", time_until_collision)
-    
-    // console.log(time_until_collision)
     if(time_until_collision < T){
       obj.accl(time_until_collision);
       obj.move(time_until_collision);
       console.log(SCREEN_HEIGHT - obj.y)
-      // obj.yv -= obj.ya*(T-time_until_collision)
-      // obj.yv += obj.ya*(T-time_until_collision)
+
       obj.yv = -Math.abs(obj.yv)
       obj.accl(T - time_until_collision);
       obj.move(T - time_until_collision);
@@ -99,33 +82,6 @@ export default function Index() {
 
     return false;
   }
-  // function bounds(){
-  //   setObList(prevObList => {
-  //     const newObList = [...prevObList]
-  //     for(const obj of newObList){
-  //       if(obj.x < 0){
-  //         // obj.x = Math.max(0, obj.x);
-  //         obj.xv = Math.abs(obj.xv);
-  //       }
-  //       if(obj.x >= SCREEN_WIDTH){
-  //         // obj.x = Math.min(SCREEN_WIDTH, obj.x);
-  //         obj.xv = -Math.abs(obj.xv);
-  //       }
-  //       if(obj.y < 0){
-  //         // obj.y = Math.max(0, obj.y);
-  //         obj.yv = Math.abs(obj.yv);
-  //       }
-  //       if(obj.y >= SCREEN_HEIGHT){
-  //         const p = obj.y;
-  //         // obj.y = Math.min(SCREEN_HEIGHT, obj.y);
-  //         obj.yv = -Math.abs(obj.yv);
-  //         // console.log(p - obj.y);
-  //       }  
-  //   }
-  //   return newObList;
-  //   });
-
-  // }
 
 
     obList.map(ob => {

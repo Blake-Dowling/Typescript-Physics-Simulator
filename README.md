@@ -31,19 +31,16 @@ b. if td < TICK:
     with t
 
 Imperfect collision elasticity:
-All parameter changes must be done in order of descending degree.
+X All parameter changes must be done in order of descending degree.
 Collisions continue to lose elasticity. I believe this may be a precision error. In principle, the function that calculates distance delta with respect to time must be precisely inverse to the function that calculates time delta with respect to distance delta.
-It seems that doing quadratic calculations is not possible without significant floating point error on small distance deltas. Therefore, time-parameterized calculations may not be used inversely to distance-parameterized calculations in such programs, unless this precision error may be solved.
+X It seems that doing quadratic calculations is not possible without significant floating point error on small distance deltas. Therefore, time-parameterized calculations may not be used inversely to distance-parameterized calculations in such programs, unless this precision error may be solved.
 After graphing quadratics, precision does not seem to be an issue. However, inversion is required for delta calculations, when the delta is invertible.
 Velocity was not being adjusted for collision intervals. Fixed, but elasticity loss is still ocurring. The principle is that error can occur from recursively applying differentials. If you calculate the velocity based on a time slice, but then need to change the velocity mid-time-slice, you must recalculate the velocity for that time slice, which in turn will alter the time slice again. With more precise time slices come more precision required by the distance calulations, and more errors occur due to limited precision.
 For collision detection:
-What we need to do is find out, over what interval will the integral of the acceleration equal to distance delta?
-So, simply figure out
-(a/2)(tf**2) - (a/2)(t0**2) = dd
-(tf**2) = dd/(a/2)
-tf = sqrt(2*dd/a)
+Without a collision, velocity changes can be front-loaded, because the final position is known. When it is not known, the integral velocity is also not known.
+We need to find the v0 to give the quadratic equation that yields t
+that, when given to the distance formula, will give an equal distance.
+Algorithm:
+vel += acc*t
+pos += (1/2)acc(t**2) + vel * t
 
-
-If less than tick, ...
-For normal movement over a tick:
-Find distance delta by taking double definite integral of acceleration over tick

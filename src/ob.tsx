@@ -89,9 +89,7 @@ export class ob implements obType{
 
 
     }
-    print(){
-      console.log(JSON.stringify(this));
-    }
+
     calcMag(mag: ob){
       //F = k * [(q1*q2)/r**2]
       try{
