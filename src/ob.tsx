@@ -25,8 +25,8 @@ export class ob{
         this.y = y;
         this.xv = 0;
         this.yv = 0;
-        this.xa = 20000;
-        this.ya = 10000;
+        this.xa = -20000;
+        this.ya = -10000;
     }
 
 
@@ -40,7 +40,9 @@ export class ob{
       return ((0.5 * (this.ya * (td ** 2))) + (this.yv * td));
     }
 
-    
+    calcTD2(obj1: ob, obj2: ob, dd: number){
+
+    }
     // Sideways trajectory projection - Calculates time at which 
     // Ob will be at passed distance delta. It uses the quadratic
     // formula to piece together the + and - results of the
@@ -52,16 +54,19 @@ export class ob{
     // curves) or never reach dd (td = infinity). Because we are
     // detecting collisions, however, simply using the minimum
     // positive result provides the correct output.
-    calcTD(dir: Dir, dd: number){
+    calcTD(dir: Dir, pos: number){
+      let dd = 0; 
       let d = 0;
       let v = 0;
       let a = 0;
       if(dir === Dir.x){
+        dd = pos - this.x;
         d = this.x;
         v = this.xv;
         a = this.xa;
       }
       else if(dir === Dir.y){
+        dd = pos - this.y;
         d = this.y;
         v = this.yv;
         a = this.ya;
@@ -103,8 +108,8 @@ export class ob{
     //******************** Check and Handle Collision ********************/
   bounds(dir: Dir, T: number, bound: number){
     const time_until_collision = 
-          dir === Dir.x ? this.calcTD(Dir.x, bound - this.x) :
-          dir === Dir.y ? this.calcTD(Dir.y, bound - this.y) :
+          dir === Dir.x ? this.calcTD(Dir.x, bound ) :
+          dir === Dir.y ? this.calcTD(Dir.y, bound ) :
           NaN;
     console.log(time_until_collision)
     if(Number.isNaN(time_until_collision)){

@@ -19,7 +19,7 @@ export default function Index() {
     setObList((prevObList) => {
       const newObList = [...prevObList]
       newObList.push(new ob(500, 500));
-      // newObList.push(new ob(500, 500));
+      // newObList.push(new ob(400, 400));
       return newObList;
     });
     setMagList((prevObList) => {
@@ -37,17 +37,33 @@ export default function Index() {
     //******************** Iterate Objects, Update Velocity and Position ********************/
     setObList(prevObList => {
       const newObList = [...prevObList]
-      for(const obj of newObList){
-        //******************** Check and Handle Collision ********************/
-        if(!obj.bounds(Dir.y, T, SCREEN_HEIGHT)
-          && !obj.bounds(Dir.y, T, 0)
-          && !obj.bounds(Dir.x, T, SCREEN_WIDTH)
-          && !obj.bounds(Dir.x, T, 0)
-          ){
+      for(let i=0; i<newObList.length; i++){
+        const obj = newObList[i];
+        let collision = false;
+        //******************** Check and Handle Bound Collision ********************/
+        collision = obj.bounds(Dir.y, T, SCREEN_HEIGHT)
+          || obj.bounds(Dir.y, T, 0)
+          || obj.bounds(Dir.x, T, SCREEN_WIDTH)
+          || obj.bounds(Dir.x, T, 0);
+        if(!collision)
+
+          for(let j=0; j<newObList.length; j++){
+            if(j != i){
+              const obj_other = newObList[j];
+              collision = obj.bounds(Dir.y, T, obj_other.y)
+                || obj.bounds(Dir.x, T, obj_other.x);
+              if(collision){
+                break;
+              }
+            }
+          }
+        
           //******************** Otherwise Simply Move ********************/
-          obj.move(T);
-          obj.accl(T);
-        }
+          if(!collision){
+            obj.move(T);
+            obj.accl(T);
+          }
+        
       }
     return newObList;
     });
