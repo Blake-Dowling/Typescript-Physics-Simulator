@@ -8,19 +8,13 @@ import { time } from 'console'
 
 const SCREEN_HEIGHT = window.innerHeight;
 const SCREEN_WIDTH = window.innerWidth;
+const T = .1;
 
-const BOX_WIDTH = 200;
-const FRIC = 0.98;
-
-
-// const mag = new ob();
-
-// const obList: ob[] = [];
-// obList.push(mag);
-let ticks = 0;
+//******************** Index Component Difinition ********************/
 export default function Index() {
   const [obList, setObList] = useState<ob[]>([]);
   const [magList, setMagList] = useState<ob[]>([]);
+  //******************** Initialize Object List States ********************/
   useEffect(() => {
     setObList((prevObList) => {
       const newObList = [...prevObList]
@@ -33,60 +27,37 @@ export default function Index() {
       newObList.push(new ob(300, 300));
       return newObList;
     });
-
   }, []);
 
 
-  const T = .1;
-  ticks += T;
 
+
+//******************** Move ********************/
   function move(){
-
-
+    //******************** Iterate Objects, Update Velocity and Position ********************/
     setObList(prevObList => {
       const newObList = [...prevObList]
-      for(const obj of [newObList[0]]){
-        // if(Math.abs(obj.yv) < 50){
-        //   // console.log(obj.y)
-        // }
-        //obj.accl(T);
-        
+      for(const obj of newObList){
+        //******************** Check and Handle Collision ********************/
         if(!bounds(obj, T)){
-          
+          //******************** Otherwise Simply Move ********************/
           obj.move(T);
           obj.accl(T);
         }
-        
       }
-
     return newObList;
     });
   }
+  //******************** Check and Handle Collision ********************/
   function bounds(obj: ob, T: number){
-
     const time_until_collision = obj.calcTDY(SCREEN_HEIGHT - obj.y);
-
-    // const obj.calcTDY()
-
     if(time_until_collision < T){
       console.log(time_until_collision)
       obj.move(time_until_collision)
-
       obj.accl(time_until_collision)
-      console.log(obj.y)
       obj.yv = -Math.abs(obj.yv)
       obj.move(T - time_until_collision)
       obj.accl(T - time_until_collision)
-
-      // obj.accl(time_until_collision);
-      // obj.move(time_until_collision);
-      // console.log(SCREEN_HEIGHT - obj.y)
-
-      // obj.yv = -Math.abs(obj.yv)
-      // obj.accl(T - time_until_collision);
-      // obj.move(T - time_until_collision);
-
-
       return true;
     }
 
@@ -101,24 +72,21 @@ export default function Index() {
       });
     });
 
-  
+  //******************** Event Loop ********************/
   function tick(){
     // mag();
 
     move();
 
-    
-    
-
-
   }
+  //******************** Start an interval to iterate an event frame once per 'T' period ********************/
   useEffect(() => {
     const interval = setInterval(tick, T*10000);
     return () => clearInterval(interval);
   }, []);
 
 
-
+//******************** Index Component Rendering ********************/
   return (
     <div className="container">
       {/* {JSON.stringify(obList)} */}
