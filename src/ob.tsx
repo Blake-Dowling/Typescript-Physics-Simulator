@@ -36,7 +36,7 @@ export class ob implements obType{
 
     accl(t: number){
 
-      this.xv += this.xa*t;
+      //this.xv += this.xa*t;
       this.yv += this.ya*t;
     }
     //double integral of acc over 0->T
