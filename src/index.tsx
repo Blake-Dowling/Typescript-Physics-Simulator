@@ -37,7 +37,7 @@ export default function Index() {
   }, []);
 
 
-  const T = .001;
+  const T = .1;
   ticks += T;
 
   function move(){
@@ -52,8 +52,9 @@ export default function Index() {
         //obj.accl(T);
         
         if(!bounds(obj, T)){
-          obj.accl(T);
+          
           obj.move(T);
+          obj.accl(T);
         }
         
       }
@@ -68,13 +69,22 @@ export default function Index() {
     // const obj.calcTDY()
 
     if(time_until_collision < T){
-      obj.accl(time_until_collision);
-      obj.move(time_until_collision);
-      console.log(SCREEN_HEIGHT - obj.y)
+      console.log(time_until_collision)
+      obj.move(time_until_collision)
 
+      obj.accl(time_until_collision)
+      console.log(obj.y)
       obj.yv = -Math.abs(obj.yv)
-      obj.accl(T - time_until_collision);
-      obj.move(T - time_until_collision);
+      obj.move(T - time_until_collision)
+      obj.accl(T - time_until_collision)
+
+      // obj.accl(time_until_collision);
+      // obj.move(time_until_collision);
+      // console.log(SCREEN_HEIGHT - obj.y)
+
+      // obj.yv = -Math.abs(obj.yv)
+      // obj.accl(T - time_until_collision);
+      // obj.move(T - time_until_collision);
 
 
       return true;

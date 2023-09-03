@@ -40,7 +40,4 @@ For collision detection:
 Without a collision, velocity changes can be front-loaded, because the final position is known. When it is not known, the integral velocity is also not known.
 We need to find the v0 to give the quadratic equation that yields t
 that, when given to the distance formula, will give an equal distance.
-Algorithm:
-vel += acc*t
-pos += (1/2)acc(t**2) + vel * t
-
+Acceleration backloading solved the issue.
