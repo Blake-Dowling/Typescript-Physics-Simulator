@@ -39,6 +39,12 @@ export class ob implements obType{
       this.xv += this.xa*t;
       this.yv += this.ya*t;
     }
+    //double integral of acc over 0->T
+    calcInstPos(T: number){
+      return (0.5*this.ya) * (T**2)
+    }
+
+
     calcKE(){
       return (.5*(this.yv**2))
     }
