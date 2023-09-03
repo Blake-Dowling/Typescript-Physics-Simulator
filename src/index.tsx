@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import ReactDOM from 'react-dom'
 import './index.css'
 import Text from './text'
-import { ob } from './ob'
+import { ob, Dir } from './ob'
 import Ob from './ob'
 import { time } from 'console'
 
@@ -39,10 +39,10 @@ export default function Index() {
       const newObList = [...prevObList]
       for(const obj of newObList){
         //******************** Check and Handle Collision ********************/
-        if(!boundsY(obj, T, SCREEN_HEIGHT)
-          && !boundsY(obj, T, 0)
-          && !boundsX(obj, T, SCREEN_WIDTH)
-          && !boundsX(obj, T, 0)
+        if(!obj.bounds(Dir.y, T, SCREEN_HEIGHT)
+          && !obj.bounds(Dir.y, T, 0)
+          && !obj.bounds(Dir.x, T, SCREEN_WIDTH)
+          && !obj.bounds(Dir.x, T, 0)
           ){
           //******************** Otherwise Simply Move ********************/
           obj.move(T);
@@ -51,41 +51,6 @@ export default function Index() {
       }
     return newObList;
     });
-  }
-  //******************** Check and Handle Collision ********************/
-  function boundsX(obj: ob, T: number, bound: number){
-    const time_until_collision = obj.calcTDX(bound - obj.x);
-    console.log(time_until_collision)
-    if(Number.isNaN(time_until_collision)){
-      return false;
-    }
-    if(time_until_collision < T){
-      
-      obj.move(time_until_collision)
-      obj.accl(time_until_collision)
-      obj.xv = -obj.xv
-      obj.move(T - time_until_collision)
-      obj.accl(T - time_until_collision)
-      return true;
-    }
-    return false;
-  }
-  function boundsY(obj: ob, T: number, bound: number){
-    const time_until_collision = obj.calcTDY(bound - obj.y);
-    console.log(time_until_collision)
-    if(Number.isNaN(time_until_collision)){
-      return false;
-    }
-    if(time_until_collision < T){
-      
-      obj.move(time_until_collision)
-      obj.accl(time_until_collision)
-      obj.yv = -obj.yv
-      obj.move(T - time_until_collision)
-      obj.accl(T - time_until_collision)
-      return true;
-    }
-    return false;
   }
   
 

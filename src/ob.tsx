@@ -2,7 +2,9 @@ import React from 'react'
 
 const SCREEN_HEIGHT = window.innerHeight;
 const SCREEN_WIDTH = window.innerWidth;
-
+export enum Dir{
+  x, y
+}
 function round(x: number, places: number) : number{
   x = Math.round(x * (10 ** places));
   x = x / (10 ** places);
@@ -11,6 +13,7 @@ function round(x: number, places: number) : number{
 
 
 export class ob{
+
     x: number;
     y: number;
     xv: number;
@@ -22,8 +25,8 @@ export class ob{
         this.y = y;
         this.xv = 0;
         this.yv = 0;
-        this.xa = -20000;
-        this.ya = -10000;
+        this.xa = 20000;
+        this.ya = 10000;
     }
 
 
@@ -31,10 +34,6 @@ export class ob{
 
       this.xv += this.xa*t;
       this.yv += this.ya*t;
-    }
-
-    calcKE(){
-      return (.5*(this.yv**2))
     }
 
     calcDDY(td: number){
@@ -53,28 +52,44 @@ export class ob{
     // curves) or never reach dd (td = infinity). Because we are
     // detecting collisions, however, simply using the minimum
     // positive result provides the correct output.
-    calcTDY(dd: number){
+    calcTD(dir: Dir, dd: number){
+      let d = 0;
+      let v = 0;
+      let a = 0;
+      if(dir === Dir.x){
+        d = this.x;
+        v = this.xv;
+        a = this.xa;
+      }
+      else if(dir === Dir.y){
+        d = this.y;
+        v = this.yv;
+        a = this.ya;
+      }
+      else{
+        return NaN;
+      }
       let td = 0;
       // Positive direction
         let td_plus = (
-          (-this.yv - (
+          (-v - (
                                     Math.sqrt(
-                                      (this.yv**2) - (2*this.ya * (-dd))
+                                      (v**2) - (2*a * (-dd))
                                     )
                                 ) 
           )                    
-        / this.ya
+        / a
         )
       
       // Negative direction
         let td_minus = (
-          (-this.yv + (
+          (-v + (
                                     Math.sqrt(
-                                      (this.yv**2) - (2*this.ya * (-dd))
+                                      (v**2) - (2*a * (-dd))
                                     )
                                 ) 
           )                    
-        / this.ya
+        / a
         )
         // Calculate minimum positive output
         td = td_plus >= 0 && td_minus < 0 ? td_plus :
@@ -84,37 +99,36 @@ export class ob{
               0;
       return td;
     }
-    calcTDX(dd: number){
-      let td = 0;
-      // Positive direction
-        let td_plus = (
-          (-this.xv - (
-                                    Math.sqrt(
-                                      (this.xv**2) - (2*this.xa * (-dd))
-                                    )
-                                ) 
-          )                    
-        / this.xa
-        )
-      
-      // Negative direction
-        let td_minus = (
-          (-this.xv + (
-                                    Math.sqrt(
-                                      (this.xv**2) - (2*this.xa * (-dd))
-                                    )
-                                ) 
-          )                    
-        / this.xa
-        )
-        // Calculate minimum positive output
-        td = td_plus >= 0 && td_minus < 0 ? td_plus :
-              td_minus >= 0 && td_plus < 0 ? td_minus :
-              td_plus >= 0 && td_minus >= 0 ? Math.min(td_plus, td_minus):
-              Number.isNaN(td_plus) || Number.isNaN(td_minus) ? NaN :
-              0;
-      return td;
+
+    //******************** Check and Handle Collision ********************/
+  bounds(dir: Dir, T: number, bound: number){
+    const time_until_collision = 
+          dir === Dir.x ? this.calcTD(Dir.x, bound - this.x) :
+          dir === Dir.y ? this.calcTD(Dir.y, bound - this.y) :
+          NaN;
+    console.log(time_until_collision)
+    if(Number.isNaN(time_until_collision)){
+      return false;
     }
+    if(time_until_collision < T){
+      
+      this.move(time_until_collision)
+      this.accl(time_until_collision)
+      if(dir === Dir.x){
+        this.xv = -this.xv
+      }
+      else if(dir === Dir.y){
+        this.yv = -this.yv
+      }
+      
+      this.move(T - time_until_collision)
+      this.accl(T - time_until_collision)
+      return true;
+    }
+    return false;
+  }
+
+  
     move(t: number){
       this.x = (0.5 * (this.xa * (t ** 2))) + (this.xv * t) + this.x;
       this.y = (0.5 * (this.ya * (t ** 2))) + (this.yv * t) + this.y;
