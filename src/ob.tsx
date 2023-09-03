@@ -9,15 +9,8 @@ function round(x: number, places: number) : number{
   return x;
 }
 
-type obType = {
-  x: number;
-  y: number;
-  xv: number;
-  yv: number;
-  xa: number;
-  ya: number;
-}
-export class ob implements obType{
+
+export class ob{
     x: number;
     y: number;
     xv: number;
@@ -29,8 +22,8 @@ export class ob implements obType{
         this.y = y;
         this.xv = 0;
         this.yv = 0;
-        this.xa = 0;
-        this.ya = 10000;
+        this.xa = -20000;
+        this.ya = -10000;
     }
 
 
@@ -39,11 +32,6 @@ export class ob implements obType{
       this.xv += this.xa*t;
       this.yv += this.ya*t;
     }
-    //double integral of acc over 0->T
-    calcInstPos(T: number){
-      return (0.5*this.ya) * (T**2)
-    }
-
 
     calcKE(){
       return (.5*(this.yv**2))
@@ -52,10 +40,23 @@ export class ob implements obType{
     calcDDY(td: number){
       return ((0.5 * (this.ya * (td ** 2))) + (this.yv * td));
     }
+
+    
+    // Sideways trajectory projection - Calculates time at which 
+    // Ob will be at passed distance delta. It uses the quadratic
+    // formula to piece together the + and - results of the
+    // inverse distance function, projecting forward in time (returns
+    // the minimum positive output of the + and - curves, for the
+    // given distance input). When the sign of the distance
+    // is opposite to the velocity, the object will either
+    // change direction due to acceleration (i.e. change output
+    // curves) or never reach dd (td = infinity). Because we are
+    // detecting collisions, however, simply using the minimum
+    // positive result provides the correct output.
     calcTDY(dd: number){
       let td = 0;
-      if(dd < 0){
-        td = (
+      // Positive direction
+        let td_plus = (
           (-this.yv - (
                                     Math.sqrt(
                                       (this.yv**2) - (2*this.ya * (-dd))
@@ -64,9 +65,9 @@ export class ob implements obType{
           )                    
         / this.ya
         )
-      }
-      else if(dd >= 0){
-        td = (
+      
+      // Negative direction
+        let td_minus = (
           (-this.yv + (
                                     Math.sqrt(
                                       (this.yv**2) - (2*this.ya * (-dd))
@@ -75,19 +76,48 @@ export class ob implements obType{
           )                    
         / this.ya
         )
-      }
+        // Calculate minimum positive output
+        td = td_plus >= 0 && td_minus < 0 ? td_plus :
+              td_minus >= 0 && td_plus < 0 ? td_minus :
+              td_plus >= 0 && td_minus >= 0 ? Math.min(td_plus, td_minus):
+              Number.isNaN(td_plus) || Number.isNaN(td_minus) ? NaN :
+              0;
+      return td;
+    }
+    calcTDX(dd: number){
+      let td = 0;
+      // Positive direction
+        let td_plus = (
+          (-this.xv - (
+                                    Math.sqrt(
+                                      (this.xv**2) - (2*this.xa * (-dd))
+                                    )
+                                ) 
+          )                    
+        / this.xa
+        )
+      
+      // Negative direction
+        let td_minus = (
+          (-this.xv + (
+                                    Math.sqrt(
+                                      (this.xv**2) - (2*this.xa * (-dd))
+                                    )
+                                ) 
+          )                    
+        / this.xa
+        )
+        // Calculate minimum positive output
+        td = td_plus >= 0 && td_minus < 0 ? td_plus :
+              td_minus >= 0 && td_plus < 0 ? td_minus :
+              td_plus >= 0 && td_minus >= 0 ? Math.min(td_plus, td_minus):
+              Number.isNaN(td_plus) || Number.isNaN(td_minus) ? NaN :
+              0;
       return td;
     }
     move(t: number){
-
-      // this.accl(t);
-
       this.x = (0.5 * (this.xa * (t ** 2))) + (this.xv * t) + this.x;
       this.y = (0.5 * (this.ya * (t ** 2))) + (this.yv * t) + this.y;
-
-      
-
-
     }
 
     calcMag(mag: ob){
@@ -130,7 +160,7 @@ export class ob implements obType{
     }
 };
 
-
+//******************** Ob Component Styling and Rendering ********************/
 export default function Ob(props:any) {
     const obj = props.obj;
     const stylesheet = {
