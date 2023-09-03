@@ -25,8 +25,8 @@ export class ob{
         this.y = y;
         this.xv = 0;
         this.yv = 0;
-        this.xa = -20000;
-        this.ya = -10000;
+        this.xa = 0;
+        this.ya = 10000;
     }
 
 
@@ -40,8 +40,56 @@ export class ob{
       return ((0.5 * (this.ya * (td ** 2))) + (this.yv * td));
     }
 
-    calcTD2(obj1: ob, obj2: ob, dd: number){
+    calcTD2(dir: Dir, obj1: ob, obj2: ob, dd: number){
 
+      let d = 0;
+      let v = 0;
+      let a = 0;
+      if(dir === Dir.x){
+        d = obj2.x - obj1.x + dd;
+        v = obj2.xv - obj1.xv;
+        a = .001
+      }
+      else if(dir === Dir.y){
+        d = obj2.y - obj1.y;
+        v = obj2.yv - obj1.yv + dd;
+        a = .001
+      }
+      
+      else{
+        return NaN;
+      }
+
+      let td = 0;
+      // Positive direction
+      let td_plus = (
+        (-v - (
+                                  Math.sqrt(
+                                    (v**2) - (2*a * (d))
+                                  )
+                              ) 
+        )                    
+      / a
+      )
+      // Negative direction
+      let td_minus = (
+        (-v + (
+                                  Math.sqrt(
+                                    (v**2) - (2*a * (d))
+                                  )
+                              ) 
+        )                    
+      / a
+      )
+
+      // console.log(td_plus, td_minus)
+        // Calculate minimum positive output
+        td = td_plus >= 0 && td_minus < 0 ? td_plus :
+              td_minus >= 0 && td_plus < 0 ? td_minus :
+              td_plus >= 0 && td_minus >= 0 ? Math.min(td_plus, td_minus):
+              Number.isNaN(td_plus) || Number.isNaN(td_minus) ? NaN :
+              NaN;
+      return td;
     }
     // Sideways trajectory projection - Calculates time at which 
     // Ob will be at passed distance delta. It uses the quadratic
@@ -107,11 +155,8 @@ export class ob{
 
     //******************** Check and Handle Collision ********************/
   bounds(dir: Dir, T: number, bound: number){
-    const time_until_collision = 
-          dir === Dir.x ? this.calcTD(Dir.x, bound ) :
-          dir === Dir.y ? this.calcTD(Dir.y, bound ) :
-          NaN;
-    console.log(time_until_collision)
+    const time_until_collision = this.calcTD(dir, bound );
+    // console.log(time_until_collision)
     if(Number.isNaN(time_until_collision)){
       return false;
     }

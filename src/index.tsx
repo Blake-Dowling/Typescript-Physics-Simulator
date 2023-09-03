@@ -19,7 +19,7 @@ export default function Index() {
     setObList((prevObList) => {
       const newObList = [...prevObList]
       newObList.push(new ob(500, 500));
-      // newObList.push(new ob(400, 400));
+      newObList.push(new ob(500, 200));
       return newObList;
     });
     setMagList((prevObList) => {
@@ -50,11 +50,12 @@ export default function Index() {
           for(let j=0; j<newObList.length; j++){
             if(j != i){
               const obj_other = newObList[j];
-              collision = obj.bounds(Dir.y, T, obj_other.y)
-                || obj.bounds(Dir.x, T, obj_other.x);
-              if(collision){
-                break;
-              }
+              console.log(obj.calcTD2(Dir.y, obj, obj_other, 30))
+              // collision = obj.bounds(Dir.y, T, obj_other.y)
+              //   || obj.bounds(Dir.x, T, obj_other.x);
+              // if(collision){
+              //   break;
+              // }
             }
           }
         
