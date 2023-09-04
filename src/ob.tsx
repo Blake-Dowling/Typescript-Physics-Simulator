@@ -5,11 +5,6 @@ const SCREEN_WIDTH = window.innerWidth;
 export enum Dir{
   x, y
 }
-function round(x: number, places: number) : number{
-  x = Math.round(x * (10 ** places));
-  x = x / (10 ** places);
-  return x;
-}
 
 
 export class ob{
@@ -42,20 +37,14 @@ export class ob{
     collision(dir: Dir, obj1: ob, obj2: ob){
       let v1 = 0;
       let v2 = 0;
-      if(dir === Dir.x){
-        v1 = obj1.vel[0];
-        v2 = obj2.vel[0];
-      }
-      else if(dir === Dir.y){
-        v1 = obj1.vel[1];
-        v2 = obj2.vel[1];
-      }
-      else{
-        return;
-      }
+      for(let i=1; i<obj1.pos.length; i++){
+        v1 = obj1.vel[i];
+        v2 = obj2.vel[i];
+      
+
       const mass1 = obj1.mass;
       const mass2 = obj2.mass;
-      const M = (mass1 * v1) + (mass2 * v1);
+      const M = (mass1 * v1) + (mass2 * v2);
       const K = (.5*mass1) * (v1**2) + (0.5*mass2) * (v2**2)
 
       let vf2_plus = (
@@ -74,42 +63,43 @@ export class ob{
         )
         / (2 * ((mass2**2) + mass2))
       )
-      console.log(vf2_minus, vf2_plus)
-      let vf2 = Math.min(vf2_minus, vf2_plus)
+      // console.log(vf2_minus, vf2_plus)
+      let vf2 = vf2_plus//Math.min(vf2_minus, vf2_plus)
       let vf1 = (M - (mass2*vf2)) / mass1
 
       // console.log(v1, v2)
       // console.log(vf1-v1,vf2-v2)
-      obj1.vel[1] = vf1;
-      obj2.vel[1] = vf2;
-      
+      obj1.vel[i] = vf1;
+      obj2.vel[i] = vf2;
     }
-    calcTD2(dir: Dir, obj1: ob, obj2: ob, dd: number){
+    }
+    calcTD2(obj1: ob, obj2: ob, dd: number){
 
-      let d = 0;
-      let v = 0;
-      let a = 0;
-      if(dir === Dir.x){
-        d = obj2.pos[0] - obj1.pos[0] + obj1.volume[0] - obj2.volume[0];
-        v = obj2.vel[0] - obj1.vel[0];
+
+        let d = 0;
+        let v = 0;
+        let a = 0;
+        // Calculate distance magnitude
+        for(let i=1; i<obj1.pos.length; i++){
+          d += (obj2.pos[i] - obj1.pos[i] - (0.5*obj1.volume[i]) - (0.5*obj2.volume[i])) ** 2;
+        }
+        d = Math.sqrt(d);
+
+        for(let i=1; i<obj1.vel.length; i++){
+          v += (obj2.vel[i] - obj1.vel[i]) ** 2;
+        }
+        v = Math.sqrt(v);
+        for(let i=1; i<obj1.acc.length; i++){
+          a += (obj2.acc[i] - obj1.acc[i]) ** 2;
+        }
+        a = Math.sqrt(a);
         a = .001
-      }
-      else if(dir === Dir.y){
-        d = obj2.pos[1] - obj1.pos[1] + obj1.volume[1] - obj2.volume[1];
-        v = obj2.vel[1] - obj1.vel[1];
-        a = .001
-      }
       
-      else{
-        return NaN;
-      }
-
-      let td = 0;
       // Positive direction
       let td_plus = (
         (-v - (
                                   Math.sqrt(
-                                    (v**2) - (2*a * (d))
+                                    (v**2) - (2*a * (-d))
                                   )
                               ) 
         )                    
@@ -119,7 +109,7 @@ export class ob{
       let td_minus = (
         (-v + (
                                   Math.sqrt(
-                                    (v**2) - (2*a * (d))
+                                    (v**2) - (2*a * (-d))
                                   )
                               ) 
         )                    
@@ -128,11 +118,13 @@ export class ob{
 
       // console.log(td_plus, td_minus)
         // Calculate minimum positive output
-        td = td_plus >= 0 && td_minus < 0 ? td_plus :
+        let td = td_plus >= 0 && td_minus < 0 ? td_plus :
               td_minus >= 0 && td_plus < 0 ? td_minus :
               td_plus >= 0 && td_minus >= 0 ? Math.min(td_plus, td_minus):
-              Number.isNaN(td_plus) || Number.isNaN(td_minus) ? NaN :
+              // Number.isNaN(td_plus) || Number.isNaN(td_minus) ? NaN :
               NaN;
+
+    
       return td;
     }
     // Sideways trajectory projection - Calculates time at which 
@@ -224,9 +216,9 @@ export class ob{
 
   
     move(t: number){
-
-      this.pos[0] += (0.5 * (this.acc[0] * (t ** 2))) + (this.vel[0] * t);
-      this.pos[1] += (0.5 * (this.acc[1] * (t ** 2))) + (this.vel[1] * t);
+      for(let i=0; i<this.pos.length; i++){
+        this.pos[i] += (0.5 * (this.acc[i] * (t ** 2))) + (this.vel[i] * t);
+      }
     }
 
     // calcMag(mag: ob){
@@ -244,12 +236,19 @@ export class ob{
 //******************** Ob Component Styling and Rendering ********************/
 export default function Ob(props:any) {
     const obj = props.obj;
+    let top = 0;
+    let left = 0;
+    if(!Number.isNaN(obj.pos[0]) && !Number.isNaN(obj.pos[1])){
+      top = obj.pos[1];
+      left = obj.pos[0];
+    }
     const stylesheet = {
         position: 'absolute',
-        top: obj.pos[1],
-        left: obj.pos[0],
+        top: top,
+        left: left,
         // filter: `blur(${Math.sqrt(Math.abs(obj.xv+obj.yv)/500)}px)`
       } as any;
+      
   return (
     <div style={stylesheet}>{JSON.stringify(props.obj)}</div>
   )

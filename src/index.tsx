@@ -18,13 +18,17 @@ export default function Index() {
   useEffect(() => {
     setObList((prevObList) => {
       const newObList = [...prevObList]
-      // newObList.push(new ob([0, 0], [0, 0], [0, 0], 1000000, [10, SCREEN_HEIGHT]));
-      // newObList.push(new ob([0, SCREEN_HEIGHT], [0, 0], [0, 0], 1000000, [SCREEN_WIDTH, 10]));
-      // newObList.push(new ob([SCREEN_WIDTH, SCREEN_HEIGHT], [0, 0], [0, 0], 1000000, [10, SCREEN_HEIGHT]));
-      // newObList.push(new ob([SCREEN_WIDTH, 0], [0, 0], [0, 0], 1000000, [SCREEN_WIDTH, 10]));
+      // left wall
+      newObList.push(new ob([-.5*SCREEN_WIDTH, .5*SCREEN_HEIGHT], [0, 0], [0, 0], 100000000, [SCREEN_WIDTH, SCREEN_HEIGHT]));
+      //bottom wall
+      newObList.push(new ob([.5*SCREEN_WIDTH, 1.5*SCREEN_HEIGHT], [0, 0], [0, 0], 100000000, [SCREEN_WIDTH, SCREEN_HEIGHT]));
+      //right wall
+      newObList.push(new ob([1.5*SCREEN_WIDTH, .5*SCREEN_HEIGHT], [0, 0], [0, 0], 100000000, [SCREEN_WIDTH, SCREEN_HEIGHT]));
+      //top wall
+      newObList.push(new ob([.5*SCREEN_WIDTH, -.5*SCREEN_HEIGHT], [0, 0], [0, 0], 100000000, [SCREEN_WIDTH, SCREEN_HEIGHT]));
 
-      newObList.push(new ob([500, 500], [0, 0], [0, -10000], 1, [30, 30]));
-      newObList.push(new ob([500, 200], [0, 0], [0, -10000], 1, [30, 30]));
+      newObList.push(new ob([500, 500], [0, 0], [0, 10000], 1, [30, 30]));
+      newObList.push(new ob([500, 200], [0, 0], [0, 10000], 1, [30, 30]));
 
 
       return newObList;
@@ -48,10 +52,10 @@ export default function Index() {
         const obj = newObList[i];
         
         //******************** Check and Handle Bound Collision ********************/
-        obj.collided = obj.bounds(Dir.y, T, SCREEN_HEIGHT)
-          || obj.bounds(Dir.y, T, 0)
-          || obj.bounds(Dir.x, T, SCREEN_WIDTH)
-          || obj.bounds(Dir.x, T, 0);
+        // obj.collided = obj.bounds(Dir.y, T, SCREEN_HEIGHT)
+        //   || obj.bounds(Dir.y, T, 0)
+        //   || obj.bounds(Dir.x, T, SCREEN_WIDTH)
+        //   || obj.bounds(Dir.x, T, 0);
         //******************** Check and Handle Object Collision ********************/
         if(!obj.collided){
 
@@ -59,16 +63,17 @@ export default function Index() {
 
             if(j != i){
               const obj_other = newObList[j];
-              let ttc = obj.calcTD2(Dir.y, obj, obj_other, 30)
+              let ttc = obj.calcTD2(obj, obj_other, 30)
+              // console.log(ttc)
               if(ttc < T){
 
                 obj.move(ttc)
                 obj.accl(ttc)
                 obj_other.move(ttc)
                 obj_other.accl(ttc)
-                // console.log(obj_other.vel[1])
+                console.log(obj_other.vel[1])
                 obj.collision(Dir.y, obj, obj_other)
-                // console.log(obj_other.vel[1])
+                console.log(obj_other.vel[1])
                 obj.move(T-ttc)
                 obj.accl(T-ttc)
                 obj_other.move(T-ttc)
