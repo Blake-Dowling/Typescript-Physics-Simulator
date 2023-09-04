@@ -17,10 +17,14 @@ export class ob{
     pos: [number, number];
     vel: [number, number];
     acc: [number, number];
-    constructor(pos: [number, number]){
-        this.pos = [pos[0], pos[1]];
-        this.vel = [0, 0];
-        this.acc = [0, 10000];
+    mass: number;
+    volume: [number, number];
+    constructor(pos: [number, number], vel: [number, number], acc: [number, number], mass: number, volume: [number, number]){
+        this.pos = pos;
+        this.vel = vel;
+        this.acc = acc;
+        this.mass = mass;
+        this.volume = volume;
     }
 
 
@@ -35,99 +39,102 @@ export class ob{
     // Calculates and sets new velocities for obj1 and obj2 using
     // conservation of momentum and kinetic energy through
     // substitution and quadratic factoring.
-    // collision(dir: Dir, obj1: ob, obj2: ob){
-    //   let v1 = 0;
-    //   let v2 = 0;
-    //   if(dir === Dir.x){
-    //     v1 = obj1.xv;
-    //     v2 = obj2.xv;
-    //   }
-    //   else if(dir === Dir.y){
-    //     v1 = obj1.yv;
-    //     v2 = obj2.yv;
-    //   }
-    //   else{
-    //     return;
-    //   }
-    //   const mass1 = 1;
-    //   const mass2 = 1;
-    //   const M = (mass1 * v1) + (mass2 * v1);
-    //   const K = (.5*mass1) * (v1**2) + (0.5*mass2) * (v2**2)
-    //   let vf2_plus = (
-    //               (
-    //                 2*M*mass2 + Math.sqrt(
-    //                                       ((-2*M*mass2)**2) - (4*(mass2**2 + mass2)*(-2*K*mass1 + (M**2)))
-    //                                       )
-    //               )
-    //               / (2 * ((mass2**2) + mass2))
-    //             )
-    //             let vf2_minus = (
-    //               (
-    //                 2*M*mass2 - Math.sqrt(
-    //                                       ((-2*M*mass2)**2) - (4*(mass2**2 + mass2)*(-2*K*mass1 + (M**2)))
-    //                                       )
-    //               )
-    //               / (2 * ((mass2**2) + mass2))
-    //             )
-    //             // console.log(vf2_minus, vf2_plus)
-    //   let vf2 = Math.min(vf2_minus, vf2_plus)
-    //   let vf1 = (M - (mass2*vf2)) / mass1
-    //   // console.log(v1, v2)
-    //   // console.log(vf1-v1,vf2-v2)
-    //   obj1.yv = vf1;
-    //   obj2.yv = vf2;
-    // }
-    // calcTD2(dir: Dir, obj1: ob, obj2: ob, dd: number){
+    collision(dir: Dir, obj1: ob, obj2: ob){
+      let v1 = 0;
+      let v2 = 0;
+      if(dir === Dir.x){
+        v1 = obj1.vel[0];
+        v2 = obj2.vel[0];
+      }
+      else if(dir === Dir.y){
+        v1 = obj1.vel[1];
+        v2 = obj2.vel[1];
+      }
+      else{
+        return;
+      }
+      const mass1 = obj1.mass;
+      const mass2 = obj2.mass;
+      const M = (mass1 * v1) + (mass2 * v1);
+      const K = (.5*mass1) * (v1**2) + (0.5*mass2) * (v2**2)
 
-    //   let d = 0;
-    //   let v = 0;
-    //   let a = 0;
-    //   if(dir === Dir.x){
-    //     d = obj2.x - obj1.x + dd;
-    //     v = obj2.xv - obj1.xv;
-    //     a = .001
-    //   }
-    //   else if(dir === Dir.y){
-    //     d = obj2.y - obj1.y;
-    //     v = obj2.yv - obj1.yv + dd;
-    //     a = .001
-    //   }
+      let vf2_plus = (
+                  (
+                    2*M*mass2 + Math.sqrt(
+                                          ((-2*M*mass2)**2) - (4*(mass2**2 + mass2)*(-2*K*mass1 + (M**2)))
+                                          )
+                  )
+                  / (2 * ((mass2**2) + mass2))
+                )
+      let vf2_minus = (
+        (
+          2*M*mass2 - Math.sqrt(
+                                ((-2*M*mass2)**2) - (4*(mass2**2 + mass2)*(-2*K*mass1 + (M**2)))
+                                )
+        )
+        / (2 * ((mass2**2) + mass2))
+      )
+      console.log(vf2_minus, vf2_plus)
+      let vf2 = Math.min(vf2_minus, vf2_plus)
+      let vf1 = (M - (mass2*vf2)) / mass1
+
+      // console.log(v1, v2)
+      // console.log(vf1-v1,vf2-v2)
+      obj1.vel[1] = vf1;
+      obj2.vel[1] = vf2;
       
-    //   else{
-    //     return NaN;
-    //   }
+    }
+    calcTD2(dir: Dir, obj1: ob, obj2: ob, dd: number){
 
-    //   let td = 0;
-    //   // Positive direction
-    //   let td_plus = (
-    //     (-v - (
-    //                               Math.sqrt(
-    //                                 (v**2) - (2*a * (d))
-    //                               )
-    //                           ) 
-    //     )                    
-    //   / a
-    //   )
-    //   // Negative direction
-    //   let td_minus = (
-    //     (-v + (
-    //                               Math.sqrt(
-    //                                 (v**2) - (2*a * (d))
-    //                               )
-    //                           ) 
-    //     )                    
-    //   / a
-    //   )
+      let d = 0;
+      let v = 0;
+      let a = 0;
+      if(dir === Dir.x){
+        d = obj2.pos[0] - obj1.pos[0] + obj1.volume[0] - obj2.volume[0];
+        v = obj2.vel[0] - obj1.vel[0];
+        a = .001
+      }
+      else if(dir === Dir.y){
+        d = obj2.pos[1] - obj1.pos[1] + obj1.volume[1] - obj2.volume[1];
+        v = obj2.vel[1] - obj1.vel[1];
+        a = .001
+      }
+      
+      else{
+        return NaN;
+      }
 
-    //   // console.log(td_plus, td_minus)
-    //     // Calculate minimum positive output
-    //     td = td_plus >= 0 && td_minus < 0 ? td_plus :
-    //           td_minus >= 0 && td_plus < 0 ? td_minus :
-    //           td_plus >= 0 && td_minus >= 0 ? Math.min(td_plus, td_minus):
-    //           Number.isNaN(td_plus) || Number.isNaN(td_minus) ? NaN :
-    //           NaN;
-    //   return td;
-    // }
+      let td = 0;
+      // Positive direction
+      let td_plus = (
+        (-v - (
+                                  Math.sqrt(
+                                    (v**2) - (2*a * (d))
+                                  )
+                              ) 
+        )                    
+      / a
+      )
+      // Negative direction
+      let td_minus = (
+        (-v + (
+                                  Math.sqrt(
+                                    (v**2) - (2*a * (d))
+                                  )
+                              ) 
+        )                    
+      / a
+      )
+
+      // console.log(td_plus, td_minus)
+        // Calculate minimum positive output
+        td = td_plus >= 0 && td_minus < 0 ? td_plus :
+              td_minus >= 0 && td_plus < 0 ? td_minus :
+              td_plus >= 0 && td_minus >= 0 ? Math.min(td_plus, td_minus):
+              Number.isNaN(td_plus) || Number.isNaN(td_minus) ? NaN :
+              NaN;
+      return td;
+    }
     // Sideways trajectory projection - Calculates time at which 
     // Ob will be at passed distance delta. It uses the quadratic
     // formula to piece together the + and - results of the
@@ -217,7 +224,7 @@ export class ob{
 
   
     move(t: number){
-      console.log(this.pos)
+
       this.pos[0] += (0.5 * (this.acc[0] * (t ** 2))) + (this.vel[0] * t);
       this.pos[1] += (0.5 * (this.acc[1] * (t ** 2))) + (this.vel[1] * t);
     }

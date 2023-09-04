@@ -18,15 +18,22 @@ export default function Index() {
   useEffect(() => {
     setObList((prevObList) => {
       const newObList = [...prevObList]
-      newObList.push(new ob([500, 500]));
-      newObList.push(new ob([500, 200]));
+      // newObList.push(new ob([0, 0], [0, 0], [0, 0], 1000000, [10, SCREEN_HEIGHT]));
+      // newObList.push(new ob([0, SCREEN_HEIGHT], [0, 0], [0, 0], 1000000, [SCREEN_WIDTH, 10]));
+      // newObList.push(new ob([SCREEN_WIDTH, SCREEN_HEIGHT], [0, 0], [0, 0], 1000000, [10, SCREEN_HEIGHT]));
+      // newObList.push(new ob([SCREEN_WIDTH, 0], [0, 0], [0, 0], 1000000, [SCREEN_WIDTH, 10]));
+
+      newObList.push(new ob([500, 500], [0, 0], [0, -10000], 1, [30, 30]));
+      newObList.push(new ob([500, 200], [0, 0], [0, -10000], 1, [30, 30]));
+
+
       return newObList;
     });
-    setMagList((prevObList) => {
-      const newObList = [...prevObList]
-      newObList.push(new ob([300, 300]));
-      return newObList;
-    });
+    // setMagList((prevObList) => {
+    //   const newObList = [...prevObList]
+    //   // newObList.push(new ob([300, 300]));
+    //   return newObList;
+    // });
   }, []);
 
 
@@ -46,29 +53,33 @@ export default function Index() {
           || obj.bounds(Dir.x, T, SCREEN_WIDTH)
           || obj.bounds(Dir.x, T, 0);
         //******************** Check and Handle Object Collision ********************/
-        // if(!obj.collided){
+        if(!obj.collided){
 
-        //   for(let j=0; j<newObList.length; j++){
-        //     if(j != i){
-        //       const obj_other = newObList[j];
-        //       let ttc = obj.calcTD2(Dir.y, obj, obj_other, 30)
-        //       if(ttc < T){
-        //         obj.move(ttc)
-        //         obj.accl(ttc)
-        //         obj_other.move(ttc)
-        //         obj_other.accl(ttc)
-        //         obj.collision(Dir.y, obj, obj_other)
-        //         obj.move(T-ttc)
-        //         obj.accl(T-ttc)
-        //         obj_other.move(T-ttc)
-        //         obj_other.accl(T-ttc)
-        //         obj.collided = true;
-        //         obj_other.collided = true;
-        //       }
+          for(let j=0; j<newObList.length; j++){
 
-        //     }
-        //   }
-        // }
+            if(j != i){
+              const obj_other = newObList[j];
+              let ttc = obj.calcTD2(Dir.y, obj, obj_other, 30)
+              if(ttc < T){
+
+                obj.move(ttc)
+                obj.accl(ttc)
+                obj_other.move(ttc)
+                obj_other.accl(ttc)
+                // console.log(obj_other.vel[1])
+                obj.collision(Dir.y, obj, obj_other)
+                // console.log(obj_other.vel[1])
+                obj.move(T-ttc)
+                obj.accl(T-ttc)
+                obj_other.move(T-ttc)
+                obj_other.accl(T-ttc)
+                obj.collided = true;
+                obj_other.collided = true;
+              }
+
+            }
+          }
+        }
           //******************** Otherwise Simply Move ********************/
           if(!obj.collided){
             obj.move(T);
