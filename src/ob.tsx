@@ -39,6 +39,9 @@ export class ob{
     calcDDY(td: number){
       return ((0.5 * (this.ya * (td ** 2))) + (this.yv * td));
     }
+    // Calculates and sets new velocities for obj1 and obj2 using
+    // conservation of momentum and kinetic energy through
+    // substitution and quadratic factoring.
     collision(dir: Dir, obj1: ob, obj2: ob){
       let v1 = 0;
       let v2 = 0;
@@ -73,7 +76,7 @@ export class ob{
                   )
                   / (2 * ((mass2**2) + mass2))
                 )
-                console.log(vf2_minus, vf2_plus)
+                // console.log(vf2_minus, vf2_plus)
       let vf2 = Math.min(vf2_minus, vf2_plus)
       let vf1 = (M - (mass2*vf2)) / mass1
       // console.log(v1, v2)
@@ -190,14 +193,14 @@ export class ob{
               td_minus >= 0 && td_plus < 0 ? td_minus :
               td_plus >= 0 && td_minus >= 0 ? Math.min(td_plus, td_minus):
               Number.isNaN(td_plus) || Number.isNaN(td_minus) ? NaN :
-              0;
+              NaN;
       return td;
     }
 
     //******************** Check and Handle Collision ********************/
   bounds(dir: Dir, T: number, bound: number){
     const time_until_collision = this.calcTD(dir, bound );
-    // console.log(time_until_collision)
+    
     if(Number.isNaN(time_until_collision)){
       return false;
     }
