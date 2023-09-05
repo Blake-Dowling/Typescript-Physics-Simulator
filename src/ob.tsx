@@ -39,40 +39,40 @@ export class ob{
     collision(dir: Dir, obj1: ob, obj2: ob){
       let v1 = 0;
       let v2 = 0;
+console.log("1 - ",obj1.vel)
       for(let i=1; i<obj1.pos.length; i++){
         v1 = obj1.vel[i];
         v2 = obj2.vel[i];
       
 
-      const mass1 = obj1.mass;
-      const mass2 = obj2.mass;
-      const M = (mass1 * v1) + (mass2 * v2);
-      const K = (.5*mass1) * (v1**2) + (0.5*mass2) * (v2**2)
+        const mass1 = obj1.mass;
+        const mass2 = obj2.mass;
+        const M = (mass1 * v1) + (mass2 * v2);
+        const K = (.5*mass1) * (v1**2) + (0.5*mass2) * (v2**2)
       // M = -M
-
-      let vf2_plus = (
+      
+      let vf1_plus = (
                   (
-                    2*M*mass2 + Math.sqrt(
-                                          ((-2*M*mass2)**2) - (4*(mass2**2 + mass2)*(-2*K*mass1 + (M**2)))
+                    2*M*mass1 + Math.sqrt(
+                                          ((-2*M*mass1)**2) - (4*(mass1**2 + mass1*mass2)*(-2*K*mass2 + (M**2)))
                                           )
                   )
-                  / (2 * ((mass2**2) + mass2))
+                  / (2 * ((mass1**2) + mass1*mass2))
                 )
                 
-      let vf2_minus = (
+      let vf1_minus = (
         (
-          2*M*mass2 - Math.sqrt(
-                                ((-2*M*mass2)**2) - (4*(mass2**2 + mass2)*(-2*K*mass1 + (M**2)))
+          2*M*mass1 - Math.sqrt(
+                                ((-2*M*mass1)**2) - (4*(mass1**2 + mass1*mass2)*(-2*K*mass2 + (M**2)))
                                 )
         )
-        / (2 * ((mass2**2) + mass2))
+        / (2 * ((mass1**2) + mass1*mass2))
       )
-      if(obj2.id === 1){
-        // console.log(vf2_plus,vf2_minus )
-      }
-      
-      let vf2 = vf2_plus//Math.min(vf2_minus, vf2_plus)
-      let vf1 = (M - (mass2*vf2)) / mass1
+      // if(obj1.id === 0){
+        console.log(vf1_plus,vf1_minus)
+      // }
+      let vf1 = vf1_minus//Math.min(vf2_minus, vf2_plus)
+      let vf2 = (M - (mass1*vf1)) / mass2
       // console.log("-",vf1)
       // console.log(v1, v2)
       // console.log(vf1-v1,vf2-v2)
@@ -144,7 +144,7 @@ export class ob{
         td_mag += td[i]**2;
       }
       td_mag = Math.sqrt(td_mag)
-      console.log(td_mag)
+      // console.log(td_mag)
       return td_mag;
     }
     // Sideways trajectory projection - Calculates time at which 

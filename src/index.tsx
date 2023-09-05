@@ -21,16 +21,16 @@ export default function Index() {
       // left wall
       // newObList.push(new ob(newObList.length, [-.5*SCREEN_WIDTH, .5*SCREEN_HEIGHT], [0, 0], [0, 0], 100000000, [SCREEN_WIDTH/2, SCREEN_HEIGHT/2]));
       // //bottom wall
-
+      
 
       newObList.push(new ob(newObList.length, [.5*SCREEN_WIDTH, 1*SCREEN_HEIGHT], [0, 0], [0, 0], 100000000, [SCREEN_WIDTH/2, SCREEN_HEIGHT/2]));
       // //right wall
       // newObList.push(new ob(newObList.length, [1.5*SCREEN_WIDTH, .5*SCREEN_HEIGHT], [0, 0], [0, 0], 100000000, [SCREEN_WIDTH/2, SCREEN_HEIGHT/2]));
       // //top wall
-      //newObList.push(new ob(newObList.length, [.5*SCREEN_WIDTH, 0*SCREEN_HEIGHT], [0, 0], [0, 0], 100000000, [SCREEN_WIDTH/2, SCREEN_HEIGHT/2]));
+      // newObList.push(new ob(newObList.length, [.5*SCREEN_WIDTH, 0*SCREEN_HEIGHT], [0, 0], [0, 0], 100000000, [SCREEN_WIDTH/2, SCREEN_HEIGHT/2]));
+      
       
       newObList.push(new ob(newObList.length, [500, 500], [0, 0], [0, 10000], 1, [30, 30]));
-      
       
       // newObList.push(new ob([500, 200], [0, 0], [0, -10000], 1, [30, 30]));
 
@@ -54,6 +54,7 @@ export default function Index() {
       const newObList = [...prevObList]
       for(let i=0; i<newObList.length; i++){
         const obj = newObList[i];
+        
         obj.collided = false;
         //******************** Check and Handle Bound Collision ********************/
         // obj.collided = obj.bounds(Dir.y, T, SCREEN_HEIGHT)
@@ -67,6 +68,7 @@ export default function Index() {
 
             if(j != i){
               const obj_other = newObList[j];
+              
 //               if(obj_other.collided === true){
 // continue;
 //               }
@@ -75,7 +77,7 @@ export default function Index() {
                 
               // }
               if(ttc < T){
-
+                
                 obj.move(ttc)
                 obj.accl(ttc)
                 obj_other.move(ttc)
