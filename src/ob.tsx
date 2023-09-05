@@ -105,7 +105,7 @@ export class ob{
         // d = Math.sqrt(d);
         if(this.id===1){
           // console.log(obj1.pos)
-          console.log(d)
+          // console.log(d)
         }
         for(let i=0; i<obj1.vel.length; i++){
           v[i] += (obj2.vel[i] - obj1.vel[i]);
@@ -150,7 +150,10 @@ export class ob{
               td_minus >= 0 && td_plus < 0 ? td_minus :
               td_plus >= 0 && td_minus >= 0 ? Math.min(td_plus, td_minus):
               // Number.isNaN(td_plus) || Number.isNaN(td_minus) ? NaN :
-              NaN;
+              Infinity;
+              // if(td_minus < 0){
+              //   td[i] = 0;
+              // }
         
       }
 
@@ -158,95 +161,10 @@ export class ob{
       // if(obj1.id === 1){
       // console.log(td)
       // }
-      return Math.min(...td);
-    }
-    // Sideways trajectory projection - Calculates time at which 
-    // Ob will be at passed distance delta. It uses the quadratic
-    // formula to piece together the + and - results of the
-    // inverse distance function, projecting forward in time (returns
-    // the minimum positive output of the + and - curves, for the
-    // given distance input). When the sign of the distance
-    // is opposite to the velocity, the object will either
-    // change direction due to acceleration (i.e. change output
-    // curves) or never reach dd (td = infinity). Because we are
-    // detecting collisions, however, simply using the minimum
-    // positive result provides the correct output.
-    calcTD(dir: Dir, pos: number){
-      let dd = 0; 
-      let d = 0;
-      let v = 0;
-      let a = 0;
-      if(dir === Dir.x){
-        dd = pos - this.pos[0];
-        d = this.pos[0];
-        v = this.vel[0];
-        a = this.acc[0];
-      }
-      else if(dir === Dir.y){
-        dd = pos - this.pos[1];
-        d = this.pos[1];
-        v = this.vel[1];
-        a = this.acc[1];
-      }
-      else{
-        return NaN;
-      }
-      let td = 0;
-      // Positive direction
-        let td_plus = (
-          (-v - (
-                                    Math.sqrt(
-                                      (v**2) - (2*a * (-dd))
-                                    )
-                                ) 
-          )                    
-        / a
-        )
-      
-      // Negative direction
-        let td_minus = (
-          (-v + (
-                                    Math.sqrt(
-                                      (v**2) - (2*a * (-dd))
-                                    )
-                                ) 
-          )                    
-        / a
-        )
-        // Calculate minimum positive output
-        td = td_plus >= 0 && td_minus < 0 ? td_plus :
-              td_minus >= 0 && td_plus < 0 ? td_minus :
-              td_plus >= 0 && td_minus >= 0 ? Math.min(td_plus, td_minus):
-              Number.isNaN(td_plus) || Number.isNaN(td_minus) ? NaN :
-              NaN;
       return td;
     }
-
-    //******************** Check and Handle Collision ********************/
-  bounds(dir: Dir, T: number, bound: number){
-    const time_until_collision = this.calcTD(dir, bound );
     
-    if(Number.isNaN(time_until_collision)){
-      return false;
-    }
-    if(time_until_collision < T){
-      
-      this.move(time_until_collision)
-      this.accl(time_until_collision)
-      if(dir === Dir.x){
-        this.vel[0] = -this.vel[0]
-      }
-      else if(dir === Dir.y){
-        this.vel[1] = -this.vel[1]
-      }
-      
-      this.move(T - time_until_collision)
-      this.accl(T - time_until_collision)
-      return true;
-    }
-    return false;
-  }
-
+  
   
     move(t: number){
       for(let i=0; i<this.pos.length; i++){

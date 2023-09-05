@@ -72,12 +72,28 @@ export default function Index() {
 //               if(obj_other.collided === true){
 // continue;
 //               }
-              let ttc = obj.calcTD2(obj, obj_other)
+              let ttcd = obj.calcTD2(obj, obj_other)
               // if(obj.id === 1){
-              //   console.log(ttc)
+                let ttc = Math.min(...ttcd)
+                console.log(obj.id, ttcd)
               // }
-              if(ttc < T){
 
+              // let col = true;
+              // for(let k=0; k<ttcd.length; k++){
+              //   if( (ttcd[k] >= T) ){
+                  
+              //     col = false;
+              //   }
+              //   else{
+              //     console.log(ttc)
+
+              //   }
+              // }
+              
+              if(ttc < T){
+                // console.log(col)
+                // console.log(ttc)
+                // let ttc = Math.min(...ttcd)
                 obj.move(ttc)
                 obj.accl(ttc)
                 obj_other.move(ttc)
