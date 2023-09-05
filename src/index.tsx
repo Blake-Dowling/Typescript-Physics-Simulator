@@ -19,18 +19,18 @@ export default function Index() {
     setObList((prevObList) => {
       const newObList = [...prevObList]
       // left wall
-      // newObList.push(new ob(newObList.length, [0*SCREEN_WIDTH, .5*SCREEN_HEIGHT], [0, 0], [0, 0], 100000000, [SCREEN_WIDTH/4, SCREEN_HEIGHT/4]));
+      newObList.push(new ob(newObList.length, [0*SCREEN_WIDTH, .5*SCREEN_HEIGHT], [0, 0], [0, 0], 100000000, [SCREEN_WIDTH/4, SCREEN_HEIGHT/4]));
       // //bottom wall
       
 
-      // newObList.push(new ob(newObList.length, [.5*SCREEN_WIDTH, 1*SCREEN_HEIGHT], [0, 0], [0, 0], 100000000, [SCREEN_WIDTH/4, SCREEN_HEIGHT/4]));
+      newObList.push(new ob(newObList.length, [.5*SCREEN_WIDTH, 1*SCREEN_HEIGHT], [0, 0], [0, 0], 100000000, [SCREEN_WIDTH/4, SCREEN_HEIGHT/4]));
       // //right wall
       // newObList.push(new ob(newObList.length, [1.5*SCREEN_WIDTH, .5*SCREEN_HEIGHT], [0, 0], [0, 0], 100000000, [SCREEN_WIDTH/2, SCREEN_HEIGHT/2]));
       // //top wall
-      newObList.push(new ob(newObList.length, [.5*SCREEN_WIDTH, 0*SCREEN_HEIGHT], [0, 0], [0, 0], 100000000, [SCREEN_WIDTH/2, SCREEN_HEIGHT/2]));
+      // newObList.push(new ob(newObList.length, [.5*SCREEN_WIDTH, 0*SCREEN_HEIGHT], [0, 0], [0, 0], 100000000, [SCREEN_WIDTH/2, SCREEN_HEIGHT/2]));
       
       
-      newObList.push(new ob(newObList.length, [500, 500], [0, 0], [0, -10000], 1, [30, 30]));
+      newObList.push(new ob(newObList.length, [500, 200], [0, 0], [-12000, 10000], 1, [30, 30]));
       
       // newObList.push(new ob([500, 200], [0, 0], [0, -10000], 1, [30, 30]));
 
@@ -72,26 +72,26 @@ export default function Index() {
 //               if(obj_other.collided === true){
 // continue;
 //               }
-if(obj.id===1){break}
+
               let ttcd = obj.calcTD2(obj, obj_other)
               // if(obj.id === 1){
                 let ttc = Math.min(...ttcd)
                 console.log(obj.id, ttcd)
               // }
 
-              // let col = true;
-              // for(let k=0; k<ttcd.length; k++){
-              //   if( (ttcd[k] >= T) ){
+              let col = true;
+              for(let k=0; k<ttcd.length; k++){
+                if( (ttcd[k] >= T) ){
                   
-              //     col = false;
-              //   }
-              //   else{
-              //     console.log(ttc)
+                  col = false;
+                }
+                else{
+                  console.log(ttc)
 
-              //   }
-              // }
+                }
+              }
               
-              if(ttc < T){
+              if(col){
                 // console.log(col)
                 // console.log(ttc)
                 // let ttc = Math.min(...ttcd)

@@ -98,28 +98,29 @@ export class ob{
           
           //obj 2 is forward
           if(obj2.pos[i] >= obj1.pos[i]){
-            
+            // console.log(obj2.id)
             let forward_obj_back = (obj2.pos[i] - (0.5*obj2.volume[i]))
             let backward_obj_front = (obj1.pos[i] + (0.5*obj1.volume[i]))
             d[i] += ( forward_obj_back - backward_obj_front );
-            console.log(d[0])
+            
             // let forward_obj_front = (obj2.pos[i] + (0.5*obj2.volume[i]))
             // let backward_obj_back = (obj1.pos[i] - (0.5*obj1.volume[i]))
             if(d[i] <= 0 ){
               td[i] = 0;
-              console.log("-----------")
+
               continue;
             }
           }
           
           //obj 2 is behind
           else if(obj2.pos[i] < obj1.pos[i]){
+            // console.log(obj2.id)
             let backward_obj_front = (obj2.pos[i] + (0.5*obj2.volume[i]))
             let forward_obj_back = (obj1.pos[i] - (0.5*obj1.volume[i]))
             d[i] += ( backward_obj_front - forward_obj_back );
-            if(d[i] <= 0 ){
+
+            if(d[i] > 0 ){
               td[i] = 0;
-              
               continue;
             }
           }
@@ -224,7 +225,7 @@ export default function Ob(props:any) {
         width: obj.volume[0],
         height: obj.volume[1],
         border: 'solid 1px black',
-        // filter: `blur(${Math.sqrt(Math.abs(obj.xv+obj.yv)/500)}px)`
+        // filter: `blur(${Math.sqrt(Math.abs(obj.vel[0]+obj.vel[1])/3000)}px)`
       } as any;
       
   return (
