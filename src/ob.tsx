@@ -8,13 +8,15 @@ export enum Dir{
 
 
 export class ob{
+    id: number;
     collided : boolean = false;
     pos: [number, number];
     vel: [number, number];
     acc: [number, number];
     mass: number;
     volume: [number, number];
-    constructor(pos: [number, number], vel: [number, number], acc: [number, number], mass: number, volume: [number, number]){
+    constructor(id: number, pos: [number, number], vel: [number, number], acc: [number, number], mass: number, volume: [number, number]){
+        this.id = id;
         this.pos = pos;
         this.vel = vel;
         this.acc = acc;
@@ -37,95 +39,126 @@ export class ob{
     collision(dir: Dir, obj1: ob, obj2: ob){
       let v1 = 0;
       let v2 = 0;
-      for(let i=1; i<obj1.pos.length; i++){
+// console.log("1 - ",obj1.vel)
+      for(let i=0; i<obj1.pos.length; i++){
         v1 = obj1.vel[i];
         v2 = obj2.vel[i];
       
 
-      const mass1 = obj1.mass;
-      const mass2 = obj2.mass;
-      const M = (mass1 * v1) + (mass2 * v2);
-      const K = (.5*mass1) * (v1**2) + (0.5*mass2) * (v2**2)
-
-      let vf2_plus = (
+        const mass1 = obj1.mass;
+        const mass2 = obj2.mass;
+        const M = (mass1 * v1) + (mass2 * v2);
+        const K = (.5*mass1) * (v1**2) + (0.5*mass2) * (v2**2)
+      // M = -M
+      
+      let vf1_plus = (
                   (
-                    2*M*mass2 + Math.sqrt(
-                                          ((-2*M*mass2)**2) - (4*(mass2**2 + mass2)*(-2*K*mass1 + (M**2)))
+                    2*M*mass1 + Math.sqrt(
+                                          ((-2*M*mass1)**2) - (4*(mass1**2 + mass1*mass2)*(-2*K*mass2 + (M**2)))
                                           )
                   )
-                  / (2 * ((mass2**2) + mass2))
+                  / (2 * ((mass1**2) + mass1*mass2))
                 )
-      let vf2_minus = (
+                
+      let vf1_minus = (
         (
-          2*M*mass2 - Math.sqrt(
-                                ((-2*M*mass2)**2) - (4*(mass2**2 + mass2)*(-2*K*mass1 + (M**2)))
+          2*M*mass1 - Math.sqrt(
+                                ((-2*M*mass1)**2) - (4*(mass1**2 + mass1*mass2)*(-2*K*mass2 + (M**2)))
                                 )
         )
-        / (2 * ((mass2**2) + mass2))
+        / (2 * ((mass1**2) + mass1*mass2))
       )
-      // console.log(vf2_minus, vf2_plus)
-      let vf2 = vf2_plus//Math.min(vf2_minus, vf2_plus)
-      let vf1 = (M - (mass2*vf2)) / mass1
-
+      // if(obj1.id === 2){
+      //   console.log(obj1.vel[i])
+      //   console.log(vf1_plus,vf1_minus)
+      // }
+      let vf1 = vf1_plus;
+      // Select side of quadratic opposite to starting velocity
+      if(Math.abs(vf1 - obj1.vel[i]) < 0.0001){
+        vf1 = vf1_minus;
+      } 
+      let vf2 = (M - (mass1*vf1)) / mass2
+      // console.log("-",vf1)
       // console.log(v1, v2)
       // console.log(vf1-v1,vf2-v2)
       obj1.vel[i] = vf1;
       obj2.vel[i] = vf2;
+      
     }
     }
-    calcTD2(obj1: ob, obj2: ob, dd: number){
+    calcTD2(obj1: ob, obj2: ob){
 
 
-        let d = 0;
-        let v = 0;
-        let a = 0;
+        let d = [0, 0];
+        let v = [0, 0];
+        let a = [0, 0];
         // Calculate distance magnitude
-        for(let i=1; i<obj1.pos.length; i++){
-          d += (obj2.pos[i] - obj1.pos[i] - (0.5*obj1.volume[i]) - (0.5*obj2.volume[i])) ** 2;
+        for(let i=0; i<obj1.pos.length; i++){
+          if(obj2.pos[i] >= obj1.pos[i]){
+            d[i] += ( (obj2.pos[i] - (0.5*obj2.volume[i])) - (obj1.pos[i] + (0.5*obj1.volume[i])) );
+          }
+          else if(obj2.pos[i] < obj1.pos[i]){
+            d[i] += ( (obj2.pos[i] + (0.5*obj2.volume[i])) - (obj1.pos[i] - (0.5*obj1.volume[i])) );
+          }
+          
         }
-        d = Math.sqrt(d);
+        // d = Math.sqrt(d);
+        if(this.id===1){
+          // console.log(obj1.pos)
+          console.log(d)
+        }
+        for(let i=0; i<obj1.vel.length; i++){
+          v[i] += (obj2.vel[i] - obj1.vel[i]);
+        }
+        // v = Math.sqrt(v);
 
-        for(let i=1; i<obj1.vel.length; i++){
-          v += (obj2.vel[i] - obj1.vel[i]) ** 2;
+        for(let i=0; i<obj1.acc.length; i++){
+          a[i] += (obj2.acc[i] - obj1.acc[i]);
+          a[i] = Math.max(a[i], .001)
         }
-        v = Math.sqrt(v);
-        for(let i=1; i<obj1.acc.length; i++){
-          a += (obj2.acc[i] - obj1.acc[i]) ** 2;
-        }
-        a = Math.sqrt(a);
-        a = .001
+        // a = Math.sqrt(a);
+        
       
       // Positive direction
-      let td_plus = (
-        (-v - (
-                                  Math.sqrt(
-                                    (v**2) - (2*a * (-d))
-                                  )
-                              ) 
-        )                    
-      / a
-      )
-      // Negative direction
-      let td_minus = (
-        (-v + (
-                                  Math.sqrt(
-                                    (v**2) - (2*a * (-d))
-                                  )
-                              ) 
-        )                    
-      / a
-      )
-
+      let td_plus = NaN;
+      let td_minus = NaN;
+      let td = [0, 0];
+      for(let i=0; i<obj1.acc.length; i++){
+        td_plus = (
+          (-v[i] + (
+                                    Math.sqrt(
+                                      (v[i]**2) - (2*a[i] * (d[i]))
+                                    )
+                                ) 
+          )                    
+        / a[i]
+        )
+        // Negative direction
+        td_minus = (
+          (-v[i] - (
+                                      Math.sqrt(
+                                        (v[i]**2) - (2*a[i] * (d[i]))
+                                      )
+                                  ) 
+          )                    
+        / a[i]
+        )
+      
       // console.log(td_plus, td_minus)
         // Calculate minimum positive output
-        let td = td_plus >= 0 && td_minus < 0 ? td_plus :
+        td[i] = td_plus >= 0 && td_minus < 0 ? td_plus :
               td_minus >= 0 && td_plus < 0 ? td_minus :
               td_plus >= 0 && td_minus >= 0 ? Math.min(td_plus, td_minus):
               // Number.isNaN(td_plus) || Number.isNaN(td_minus) ? NaN :
               NaN;
+        
+      }
 
-    
-      return td;
+
+      // if(obj1.id === 1){
+      // console.log(td)
+      // }
+      return Math.min(...td);
     }
     // Sideways trajectory projection - Calculates time at which 
     // Ob will be at passed distance delta. It uses the quadratic
@@ -244,8 +277,11 @@ export default function Ob(props:any) {
     }
     const stylesheet = {
         position: 'absolute',
-        top: top,
-        left: left,
+        top: top-(0.5*obj.volume[1]),
+        left: left-(0.5*obj.volume[0]),
+        width: obj.volume[0],
+        height: obj.volume[1],
+        border: 'solid 1px black',
         // filter: `blur(${Math.sqrt(Math.abs(obj.xv+obj.yv)/500)}px)`
       } as any;
       
