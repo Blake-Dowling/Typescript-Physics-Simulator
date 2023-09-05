@@ -19,18 +19,18 @@ export default function Index() {
     setObList((prevObList) => {
       const newObList = [...prevObList]
       // left wall
-      newObList.push(new ob(newObList.length, [0*SCREEN_WIDTH, .5*SCREEN_HEIGHT], [0, 0], [0, 0], 100000000, [SCREEN_WIDTH/4, SCREEN_HEIGHT/4]));
+      // newObList.push(new ob(newObList.length, [0*SCREEN_WIDTH, .5*SCREEN_HEIGHT], [0, 0], [0, 0], 100000000, [SCREEN_WIDTH/4, SCREEN_HEIGHT/4]));
       // //bottom wall
       
 
-      newObList.push(new ob(newObList.length, [.5*SCREEN_WIDTH, 1*SCREEN_HEIGHT], [0, 0], [0, 0], 100000000, [SCREEN_WIDTH/4, SCREEN_HEIGHT/4]));
+      // newObList.push(new ob(newObList.length, [.5*SCREEN_WIDTH, 1*SCREEN_HEIGHT], [0, 0], [0, 0], 100000000, [SCREEN_WIDTH/4, SCREEN_HEIGHT/4]));
       // //right wall
       // newObList.push(new ob(newObList.length, [1.5*SCREEN_WIDTH, .5*SCREEN_HEIGHT], [0, 0], [0, 0], 100000000, [SCREEN_WIDTH/2, SCREEN_HEIGHT/2]));
       // //top wall
-      //newObList.push(new ob(newObList.length, [.5*SCREEN_WIDTH, 0*SCREEN_HEIGHT], [0, 0], [0, 0], 100000000, [SCREEN_WIDTH/2, SCREEN_HEIGHT/2]));
+      newObList.push(new ob(newObList.length, [.5*SCREEN_WIDTH, 0*SCREEN_HEIGHT], [0, 0], [0, 0], 100000000, [SCREEN_WIDTH/2, SCREEN_HEIGHT/2]));
       
       
-      newObList.push(new ob(newObList.length, [500, 500], [0, 0], [0, 10000], 1, [30, 30]));
+      newObList.push(new ob(newObList.length, [500, 500], [0, 0], [0, -10000], 1, [30, 30]));
       
       // newObList.push(new ob([500, 200], [0, 0], [0, -10000], 1, [30, 30]));
 
@@ -82,7 +82,8 @@ export default function Index() {
                 obj.accl(ttc)
                 obj_other.move(ttc)
                 obj_other.accl(ttc)
-                // console.log(obj.vel[1])
+                // console.log(":::",obj.pos)
+                // console.log(":::",obj_other.pos)
                 obj.collision(Dir.y, obj, obj_other)
                 // console.log(obj.vel[1])
                 obj.move(T-ttc)

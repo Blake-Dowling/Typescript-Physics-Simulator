@@ -68,10 +68,10 @@ export class ob{
         )
         / (2 * ((mass1**2) + mass1*mass2))
       )
-      if(obj1.id === 2){
-        console.log(obj1.vel[i])
-        console.log(vf1_plus,vf1_minus)
-      }
+      // if(obj1.id === 2){
+      //   console.log(obj1.vel[i])
+      //   console.log(vf1_plus,vf1_minus)
+      // }
       let vf1 = vf1_plus;
       // Select side of quadratic opposite to starting velocity
       if(Math.abs(vf1 - obj1.vel[i]) < 0.0001){
@@ -103,9 +103,10 @@ export class ob{
           
         }
         // d = Math.sqrt(d);
-        // if(this.id===1){
-        //   console.log(d)
-        // }
+        if(this.id===1){
+          // console.log(obj1.pos)
+          console.log(d)
+        }
         for(let i=0; i<obj1.vel.length; i++){
           v[i] += (obj2.vel[i] - obj1.vel[i]);
         }
