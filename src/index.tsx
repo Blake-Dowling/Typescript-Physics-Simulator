@@ -72,6 +72,7 @@ export default function Index() {
 //               if(obj_other.collided === true){
 // continue;
 //               }
+if(obj.id===1){break}
               let ttcd = obj.calcTD2(obj, obj_other)
               // if(obj.id === 1){
                 let ttc = Math.min(...ttcd)

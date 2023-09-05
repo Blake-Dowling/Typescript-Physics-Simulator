@@ -92,38 +92,62 @@ export class ob{
         let d = [0, 0];
         let v = [0, 0];
         let a = [0, 0];
+        let td = [0, 0];
         // Calculate distance magnitude
         for(let i=0; i<obj1.pos.length; i++){
+          
+          //obj 2 is forward
           if(obj2.pos[i] >= obj1.pos[i]){
-            d[i] += ( (obj2.pos[i] - (0.5*obj2.volume[i])) - (obj1.pos[i] + (0.5*obj1.volume[i])) );
-          }
-          else if(obj2.pos[i] < obj1.pos[i]){
-            d[i] += ( (obj2.pos[i] + (0.5*obj2.volume[i])) - (obj1.pos[i] - (0.5*obj1.volume[i])) );
+            
+            let forward_obj_back = (obj2.pos[i] - (0.5*obj2.volume[i]))
+            let backward_obj_front = (obj1.pos[i] + (0.5*obj1.volume[i]))
+            d[i] += ( forward_obj_back - backward_obj_front );
+            console.log(d[0])
+            // let forward_obj_front = (obj2.pos[i] + (0.5*obj2.volume[i]))
+            // let backward_obj_back = (obj1.pos[i] - (0.5*obj1.volume[i]))
+            if(d[i] <= 0 ){
+              td[i] = 0;
+              console.log("-----------")
+              continue;
+            }
           }
           
-        }
+          //obj 2 is behind
+          else if(obj2.pos[i] < obj1.pos[i]){
+            let backward_obj_front = (obj2.pos[i] + (0.5*obj2.volume[i]))
+            let forward_obj_back = (obj1.pos[i] - (0.5*obj1.volume[i]))
+            d[i] += ( backward_obj_front - forward_obj_back );
+            if(d[i] <= 0 ){
+              td[i] = 0;
+              
+              continue;
+            }
+          }
+          // console.log(i)
+        
         // d = Math.sqrt(d);
         if(this.id===1){
           // console.log(obj1.pos)
-          // console.log(d)
+          // console.log(( (obj2.pos[1] - (0.5*obj2.volume[1])) - (obj1.pos[1] + (0.5*obj1.volume[1])) ));
+          // console.log(( (obj2.pos[1] + (0.5*obj2.volume[1])) - (obj1.pos[1] - (0.5*obj1.volume[1])) ));
         }
-        for(let i=0; i<obj1.vel.length; i++){
+ 
           v[i] += (obj2.vel[i] - obj1.vel[i]);
-        }
+        
         // v = Math.sqrt(v);
 
-        for(let i=0; i<obj1.acc.length; i++){
+ 
           a[i] += (obj2.acc[i] - obj1.acc[i]);
           a[i] = Math.max(a[i], .001)
-        }
+        
         // a = Math.sqrt(a);
         
       
       // Positive direction
       let td_plus = NaN;
       let td_minus = NaN;
-      let td = [0, 0];
-      for(let i=0; i<obj1.acc.length; i++){
+
+
         td_plus = (
           (-v[i] + (
                                     Math.sqrt(
