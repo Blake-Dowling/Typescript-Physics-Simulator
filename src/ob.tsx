@@ -39,8 +39,8 @@ export class ob{
     collision(dir: Dir, obj1: ob, obj2: ob){
       let v1 = 0;
       let v2 = 0;
-console.log("1 - ",obj1.vel)
-      for(let i=1; i<obj1.pos.length; i++){
+// console.log("1 - ",obj1.vel)
+      for(let i=0; i<obj1.pos.length; i++){
         v1 = obj1.vel[i];
         v2 = obj2.vel[i];
       
@@ -68,10 +68,15 @@ console.log("1 - ",obj1.vel)
         )
         / (2 * ((mass1**2) + mass1*mass2))
       )
-      // if(obj1.id === 0){
+      if(obj1.id === 2){
+        console.log(obj1.vel[i])
         console.log(vf1_plus,vf1_minus)
-      // }
-      let vf1 = vf1_minus//Math.min(vf2_minus, vf2_plus)
+      }
+      let vf1 = vf1_plus;
+      // Select side of quadratic opposite to starting velocity
+      if(Math.abs(vf1 - obj1.vel[i]) < 0.0001){
+        vf1 = vf1_minus;
+      } 
       let vf2 = (M - (mass1*vf1)) / mass2
       // console.log("-",vf1)
       // console.log(v1, v2)
@@ -88,17 +93,25 @@ console.log("1 - ",obj1.vel)
         let v = [0, 0];
         let a = [0, 0];
         // Calculate distance magnitude
-        for(let i=1; i<obj1.pos.length; i++){
-          d[i] += (obj2.pos[i] - obj1.pos[i] - (0.5*obj1.volume[i]) - (0.5*obj2.volume[i]));
+        for(let i=0; i<obj1.pos.length; i++){
+          if(obj2.pos[i] >= obj1.pos[i]){
+            d[i] += ( (obj2.pos[i] - (0.5*obj2.volume[i])) - (obj1.pos[i] + (0.5*obj1.volume[i])) );
+          }
+          else if(obj2.pos[i] < obj1.pos[i]){
+            d[i] += ( (obj2.pos[i] + (0.5*obj2.volume[i])) - (obj1.pos[i] - (0.5*obj1.volume[i])) );
+          }
+          
         }
         // d = Math.sqrt(d);
-
-        for(let i=1; i<obj1.vel.length; i++){
+        // if(this.id===1){
+        //   console.log(d)
+        // }
+        for(let i=0; i<obj1.vel.length; i++){
           v[i] += (obj2.vel[i] - obj1.vel[i]);
         }
         // v = Math.sqrt(v);
 
-        for(let i=1; i<obj1.acc.length; i++){
+        for(let i=0; i<obj1.acc.length; i++){
           a[i] += (obj2.acc[i] - obj1.acc[i]);
           a[i] = Math.max(a[i], .001)
         }
@@ -109,7 +122,7 @@ console.log("1 - ",obj1.vel)
       let td_plus = NaN;
       let td_minus = NaN;
       let td = [0, 0];
-      for(let i=1; i<obj1.acc.length; i++){
+      for(let i=0; i<obj1.acc.length; i++){
         td_plus = (
           (-v[i] + (
                                     Math.sqrt(
@@ -139,13 +152,12 @@ console.log("1 - ",obj1.vel)
               NaN;
         
       }
-      let td_mag = 0;
-      for(let i=1; i<obj1.acc.length; i++){
-        td_mag += td[i]**2;
-      }
-      td_mag = Math.sqrt(td_mag)
-      // console.log(td_mag)
-      return td_mag;
+
+
+      // if(obj1.id === 1){
+      // console.log(td)
+      // }
+      return Math.min(...td);
     }
     // Sideways trajectory projection - Calculates time at which 
     // Ob will be at passed distance delta. It uses the quadratic
