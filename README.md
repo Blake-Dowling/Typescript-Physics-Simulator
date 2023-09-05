@@ -15,6 +15,3 @@ Collision Handling:
 New velocities for two objects are calculated using
 conservation of momentum and kinetic energy through
 substitution and quadratic factoring.
-
-Wall Collisions:
-Calculating distance vectors is more complicated for shapes with non-uniform dimensions.

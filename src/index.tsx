@@ -19,16 +19,20 @@ export default function Index() {
     setObList((prevObList) => {
       const newObList = [...prevObList]
       // left wall
-      newObList.push(new ob([-.5*SCREEN_WIDTH, .5*SCREEN_HEIGHT], [0, 0], [0, 0], 100000000, [SCREEN_WIDTH, SCREEN_HEIGHT]));
-      //bottom wall
-      newObList.push(new ob([.5*SCREEN_WIDTH, 1.5*SCREEN_HEIGHT], [0, 0], [0, 0], 100000000, [SCREEN_WIDTH, SCREEN_HEIGHT]));
-      //right wall
-      newObList.push(new ob([1.5*SCREEN_WIDTH, .5*SCREEN_HEIGHT], [0, 0], [0, 0], 100000000, [SCREEN_WIDTH, SCREEN_HEIGHT]));
-      //top wall
-      newObList.push(new ob([.5*SCREEN_WIDTH, -.5*SCREEN_HEIGHT], [0, 0], [0, 0], 100000000, [SCREEN_WIDTH, SCREEN_HEIGHT]));
+      // newObList.push(new ob(newObList.length, [-.5*SCREEN_WIDTH, .5*SCREEN_HEIGHT], [0, 0], [0, 0], 100000000, [SCREEN_WIDTH/2, SCREEN_HEIGHT/2]));
+      // //bottom wall
 
-      newObList.push(new ob([500, 500], [0, 0], [0, 10000], 1, [30, 30]));
-      newObList.push(new ob([500, 200], [0, 0], [0, 10000], 1, [30, 30]));
+
+      newObList.push(new ob(newObList.length, [.5*SCREEN_WIDTH, 1*SCREEN_HEIGHT], [0, 0], [0, 0], 100000000, [SCREEN_WIDTH/2, SCREEN_HEIGHT/2]));
+      // //right wall
+      // newObList.push(new ob(newObList.length, [1.5*SCREEN_WIDTH, .5*SCREEN_HEIGHT], [0, 0], [0, 0], 100000000, [SCREEN_WIDTH/2, SCREEN_HEIGHT/2]));
+      // //top wall
+      //newObList.push(new ob(newObList.length, [.5*SCREEN_WIDTH, 0*SCREEN_HEIGHT], [0, 0], [0, 0], 100000000, [SCREEN_WIDTH/2, SCREEN_HEIGHT/2]));
+      
+      newObList.push(new ob(newObList.length, [500, 500], [0, 0], [0, 10000], 1, [30, 30]));
+      
+      
+      // newObList.push(new ob([500, 200], [0, 0], [0, -10000], 1, [30, 30]));
 
 
       return newObList;
@@ -50,7 +54,7 @@ export default function Index() {
       const newObList = [...prevObList]
       for(let i=0; i<newObList.length; i++){
         const obj = newObList[i];
-        
+        obj.collided = false;
         //******************** Check and Handle Bound Collision ********************/
         // obj.collided = obj.bounds(Dir.y, T, SCREEN_HEIGHT)
         //   || obj.bounds(Dir.y, T, 0)
@@ -63,23 +67,29 @@ export default function Index() {
 
             if(j != i){
               const obj_other = newObList[j];
-              let ttc = obj.calcTD2(obj, obj_other, 30)
-              // console.log(ttc)
+//               if(obj_other.collided === true){
+// continue;
+//               }
+              let ttc = obj.calcTD2(obj, obj_other)
+              // if(obj.id === 1){
+                
+              // }
               if(ttc < T){
 
                 obj.move(ttc)
                 obj.accl(ttc)
                 obj_other.move(ttc)
                 obj_other.accl(ttc)
-                console.log(obj_other.vel[1])
+                // console.log(obj.vel[1])
                 obj.collision(Dir.y, obj, obj_other)
-                console.log(obj_other.vel[1])
+                // console.log(obj.vel[1])
                 obj.move(T-ttc)
                 obj.accl(T-ttc)
                 obj_other.move(T-ttc)
                 obj_other.accl(T-ttc)
                 obj.collided = true;
                 obj_other.collided = true;
+
               }
 
             }
@@ -90,7 +100,7 @@ export default function Index() {
             obj.move(T);
             obj.accl(T);
           }
-          obj.collided = false;
+          
       }
     return newObList;
     });
