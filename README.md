@@ -15,3 +15,25 @@ Collision Handling:
 New velocities for two objects are calculated using
 conservation of momentum and kinetic energy through
 substitution and quadratic factoring.
+
+Functional Collision Detection:
+-          ---------       y1(x)
+  \____/_\/
+______/   \_________       y2(x)
+
+
+--\        /---------      [y1-y2](x)
+0_ \---\__/
+        --
+            0              [x](y1-y2)
+            |  |           f = [x](y1-y2), (y1-y2) < 0
+            |  |           f = +- sqrt(x+2)
+            |  |           if f(0) = undefined: no collision
+            | /            else: collision
+           /|
+          | |    <f
+           \|
+                           
+                                
+
+

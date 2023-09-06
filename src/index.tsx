@@ -19,7 +19,7 @@ export default function Index() {
     setObList((prevObList) => {
       const newObList = [...prevObList]
       // left wall
-      newObList.push(new ob(newObList.length, [0*SCREEN_WIDTH, .5*SCREEN_HEIGHT], [0, 0], [0, 0], 100000000, [SCREEN_WIDTH/4, SCREEN_HEIGHT/4]));
+      // newObList.push(new ob(newObList.length, [0*SCREEN_WIDTH, .5*SCREEN_HEIGHT], [0, 0], [0, 0], 100000000, [SCREEN_WIDTH/4, SCREEN_HEIGHT/4]));
       // //bottom wall
       
 
@@ -30,7 +30,7 @@ export default function Index() {
       // newObList.push(new ob(newObList.length, [.5*SCREEN_WIDTH, 0*SCREEN_HEIGHT], [0, 0], [0, 0], 100000000, [SCREEN_WIDTH/2, SCREEN_HEIGHT/2]));
       
       
-      newObList.push(new ob(newObList.length, [500, 200], [0, 0], [-12000, 10000], 1, [30, 30]));
+      newObList.push(new ob(newObList.length, [500, 200], [10, 0], [0, 10000], 1, [30, 30]));
       
       // newObList.push(new ob([500, 200], [0, 0], [0, -10000], 1, [30, 30]));
 
@@ -74,9 +74,20 @@ export default function Index() {
 //               }
 
               let ttcd = obj.calcTD2(obj, obj_other)
-              // if(obj.id === 1){
+              if(obj.id === 1){
+                console.log(ttcd)
+            }
+                let min_ttc = Infinity
+                let col_dim = NaN;
+                for(let k=0; k<ttcd.length; k++){
+                  if(ttcd[k] < min_ttc){
+                    min_ttc = ttcd[k]
+                    col_dim = k;
+                  }
+                }
                 let ttc = Math.min(...ttcd)
-                console.log(obj.id, ttcd)
+                
+                // console.log(obj.id, ttcd)
               // }
 
               let col = true;
@@ -86,7 +97,7 @@ export default function Index() {
                   col = false;
                 }
                 else{
-                  console.log(ttc)
+                  // console.log(ttc)
 
                 }
               }
@@ -101,7 +112,7 @@ export default function Index() {
                 obj_other.accl(ttc)
                 // console.log(":::",obj.pos)
                 // console.log(":::",obj_other.pos)
-                obj.collision(Dir.y, obj, obj_other)
+                obj.collision(Dir.y, obj, obj_other, col_dim)
                 // console.log(obj.vel[1])
                 obj.move(T-ttc)
                 obj.accl(T-ttc)

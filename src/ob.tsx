@@ -36,11 +36,12 @@ export class ob{
     // Calculates and sets new velocities for obj1 and obj2 using
     // conservation of momentum and kinetic energy through
     // substitution and quadratic factoring.
-    collision(dir: Dir, obj1: ob, obj2: ob){
+    // Todo take angle as parameter
+    collision(dir: Dir, obj1: ob, obj2: ob, col_dim: number){
       let v1 = 0;
       let v2 = 0;
 // console.log("1 - ",obj1.vel)
-      for(let i=0; i<obj1.pos.length; i++){
+      for(let i=col_dim; i<obj1.pos.length; i++){
         v1 = obj1.vel[i];
         v2 = obj2.vel[i];
       
@@ -103,8 +104,7 @@ export class ob{
             let backward_obj_front = (obj1.pos[i] + (0.5*obj1.volume[i]))
             d[i] += ( forward_obj_back - backward_obj_front );
             
-            // let forward_obj_front = (obj2.pos[i] + (0.5*obj2.volume[i]))
-            // let backward_obj_back = (obj1.pos[i] - (0.5*obj1.volume[i]))
+
             if(d[i] <= 0 ){
               td[i] = 0;
 
@@ -114,7 +114,7 @@ export class ob{
           
           //obj 2 is behind
           else if(obj2.pos[i] < obj1.pos[i]){
-            // console.log(obj2.id)
+            
             let backward_obj_front = (obj2.pos[i] + (0.5*obj2.volume[i]))
             let forward_obj_back = (obj1.pos[i] - (0.5*obj1.volume[i]))
             d[i] += ( backward_obj_front - forward_obj_back );
@@ -179,7 +179,7 @@ export class ob{
               // if(td_minus < 0){
               //   td[i] = 0;
               // }
-        
+
       }
 
 
