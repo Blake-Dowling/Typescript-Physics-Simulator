@@ -102,6 +102,7 @@ export class ob{
             // console.log(obj2.id)
             let forward_obj_back = (obj2.pos[i] - (0.5*obj2.volume[i]))
             let backward_obj_front = (obj1.pos[i] + (0.5*obj1.volume[i]))
+            //distance from top/back
             d[i] += ( forward_obj_back - backward_obj_front );
             
 
@@ -117,9 +118,10 @@ export class ob{
             
             let backward_obj_front = (obj2.pos[i] + (0.5*obj2.volume[i]))
             let forward_obj_back = (obj1.pos[i] - (0.5*obj1.volume[i]))
-            d[i] += ( backward_obj_front - forward_obj_back );
+            //distance from top/back
+            d[i] += (forward_obj_back - backward_obj_front );
 
-            if(d[i] > 0 ){
+            if(d[i] <= 0 ){
               td[i] = 0;
               continue;
             }
