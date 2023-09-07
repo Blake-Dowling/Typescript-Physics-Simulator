@@ -72,11 +72,14 @@ export default function Index() {
 //               if(obj_other.collided === true){
 // continue;
 //               }
-
+            //1. ******************** Time Until Collide Vector ********************/
+            // Once position is functional, use tangent
               let ttcd = obj.calcTD2(obj, obj_other)
               if(obj.id === 1){
                 console.log(ttcd)
             }
+            //2. ******************** Calculate collision direction ********************/
+            // by using the dimension with the largest time delta
                 let min_ttc = Infinity
                 let col_dim = NaN;
                 for(let k=0; k<ttcd.length; k++){
