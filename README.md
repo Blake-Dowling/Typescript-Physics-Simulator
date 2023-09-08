@@ -11,29 +11,16 @@ curves) or never reach dd (td = infinity). Because we are
 detecting collisions, however, simply using the minimum
 positive result provides the correct output.
 
+For point-group objects, points will be represented by pos, vel, acc vectors in each dimension. Collisions are detected by calculating the normal vector for each surface of an object and comparing it with the normal vector of the plane with each point of each other object. This will be parameterized by time, which, with inversion, allows calculation of the time at which a point will collide with a plane.
+
 Collision Handling:
 New velocities for two objects are calculated using
 conservation of momentum and kinetic energy through
 substitution and quadratic factoring.
 
 Functional Collision Detection:
--          ---------       y1(x)
-  \____/_\/
-______/   \_________       y2(x)
+Rather than a function, an array of points.    
 
 
---\        /---------      [y1-y2](x)
-0_ \---\__/
-        --
-            0              [x](y1-y2)
-            |  |           f = [x](y1-y2), (y1-y2) < 0
-            |  |           f = +- sqrt(x+2)
-            |  |           if f(0) = undefined: no collision
-            | /            else: collision
-           /|
-          | |    <f
-           \|
-                           
-                                
 
 
