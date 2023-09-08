@@ -23,14 +23,14 @@ export default function Index() {
       // //bottom wall
       
 
-      // newObList.push(new ob(newObList.length, [.5*SCREEN_WIDTH, 1*SCREEN_HEIGHT], [0, 0], [0, 0], 100000000, [SCREEN_WIDTH/4, SCREEN_HEIGHT/4]));
+      newObList.push(new ob(newObList.length, [.5*SCREEN_WIDTH, 1*SCREEN_HEIGHT], [0, 0], [0, 0], 100000000, [SCREEN_WIDTH/4, SCREEN_HEIGHT/4]));
       // //right wall
       // newObList.push(new ob(newObList.length, [1.5*SCREEN_WIDTH, .5*SCREEN_HEIGHT], [0, 0], [0, 0], 100000000, [SCREEN_WIDTH/2, SCREEN_HEIGHT/2]));
       // //top wall
-      newObList.push(new ob(newObList.length, [.5*SCREEN_WIDTH, 0*SCREEN_HEIGHT], [0, 0], [0, 0], 100000000, [SCREEN_WIDTH/2, SCREEN_HEIGHT/2]));
+      // newObList.push(new ob(newObList.length, [.5*SCREEN_WIDTH, 0*SCREEN_HEIGHT], [0, 0], [0, 0], 100000000, [SCREEN_WIDTH/2, SCREEN_HEIGHT/2]));
       
       
-      newObList.push(new ob(newObList.length, [500, 500], [0, 0], [0, -10000], 1, [30, 30]));
+      newObList.push(new ob(newObList.length, [500, 200], [10, 0], [0, 10000], 1, [30, 30]));
       
       // newObList.push(new ob([500, 200], [0, 0], [0, -10000], 1, [30, 30]));
 
@@ -72,19 +72,50 @@ export default function Index() {
 //               if(obj_other.collided === true){
 // continue;
 //               }
-              let ttc = obj.calcTD2(obj, obj_other)
-              // if(obj.id === 1){
-              //   console.log(ttc)
+            //1. ******************** Time Until Collide Vector ********************/
+            // Once position is functional, use tangent
+              let ttcd = obj.calcTD2(obj, obj_other)
+              if(obj.id === 1){
+                console.log(ttcd)
+            }
+            //2. ******************** Calculate collision direction ********************/
+            // by using the dimension with the largest time delta
+                let min_ttc = Infinity
+                let col_dim = NaN;
+                for(let k=0; k<ttcd.length; k++){
+                  if(ttcd[k] < min_ttc){
+                    min_ttc = ttcd[k]
+                    col_dim = k;
+                  }
+                }
+                let ttc = Math.min(...ttcd)
+                
+                // console.log(obj.id, ttcd)
               // }
-              if(ttc < T){
 
+              let col = true;
+              for(let k=0; k<ttcd.length; k++){
+                if( (ttcd[k] >= T) ){
+                  
+                  col = false;
+                }
+                else{
+                  // console.log(ttc)
+
+                }
+              }
+              
+              if(col){
+                // console.log(col)
+                // console.log(ttc)
+                // let ttc = Math.min(...ttcd)
                 obj.move(ttc)
                 obj.accl(ttc)
                 obj_other.move(ttc)
                 obj_other.accl(ttc)
                 // console.log(":::",obj.pos)
                 // console.log(":::",obj_other.pos)
-                obj.collision(Dir.y, obj, obj_other)
+                obj.collision(Dir.y, obj, obj_other, col_dim)
                 // console.log(obj.vel[1])
                 obj.move(T-ttc)
                 obj.accl(T-ttc)

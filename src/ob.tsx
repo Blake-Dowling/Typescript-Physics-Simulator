@@ -36,11 +36,12 @@ export class ob{
     // Calculates and sets new velocities for obj1 and obj2 using
     // conservation of momentum and kinetic energy through
     // substitution and quadratic factoring.
-    collision(dir: Dir, obj1: ob, obj2: ob){
+    // Todo take angle as parameter
+    collision(dir: Dir, obj1: ob, obj2: ob, col_dim: number){
       let v1 = 0;
       let v2 = 0;
 // console.log("1 - ",obj1.vel)
-      for(let i=0; i<obj1.pos.length; i++){
+      for(let i=col_dim; i<obj1.pos.length; i++){
         v1 = obj1.vel[i];
         v2 = obj2.vel[i];
       
@@ -92,38 +93,64 @@ export class ob{
         let d = [0, 0];
         let v = [0, 0];
         let a = [0, 0];
+        let td = [0, 0];
         // Calculate distance magnitude
         for(let i=0; i<obj1.pos.length; i++){
+          
+          //obj 2 is forward
           if(obj2.pos[i] >= obj1.pos[i]){
-            d[i] += ( (obj2.pos[i] - (0.5*obj2.volume[i])) - (obj1.pos[i] + (0.5*obj1.volume[i])) );
-          }
-          else if(obj2.pos[i] < obj1.pos[i]){
-            d[i] += ( (obj2.pos[i] + (0.5*obj2.volume[i])) - (obj1.pos[i] - (0.5*obj1.volume[i])) );
+            // console.log(obj2.id)
+            let forward_obj_back = (obj2.pos[i] - (0.5*obj2.volume[i]))
+            let backward_obj_front = (obj1.pos[i] + (0.5*obj1.volume[i]))
+            //distance from top/back
+            d[i] += ( forward_obj_back - backward_obj_front );
+            
+
+            if(d[i] <= 0 ){
+              td[i] = 0;
+
+              continue;
+            }
           }
           
-        }
+          //obj 2 is behind
+          else if(obj2.pos[i] < obj1.pos[i]){
+            
+            let backward_obj_front = (obj2.pos[i] + (0.5*obj2.volume[i]))
+            let forward_obj_back = (obj1.pos[i] - (0.5*obj1.volume[i]))
+            //distance from top/back
+            d[i] += (forward_obj_back - backward_obj_front );
+
+            if(d[i] <= 0 ){
+              td[i] = 0;
+              continue;
+            }
+          }
+          // console.log(i)
+        
         // d = Math.sqrt(d);
         if(this.id===1){
           // console.log(obj1.pos)
-          console.log(d)
+          // console.log(( (obj2.pos[1] - (0.5*obj2.volume[1])) - (obj1.pos[1] + (0.5*obj1.volume[1])) ));
+          // console.log(( (obj2.pos[1] + (0.5*obj2.volume[1])) - (obj1.pos[1] - (0.5*obj1.volume[1])) ));
         }
-        for(let i=0; i<obj1.vel.length; i++){
+ 
           v[i] += (obj2.vel[i] - obj1.vel[i]);
-        }
+        
         // v = Math.sqrt(v);
 
-        for(let i=0; i<obj1.acc.length; i++){
+ 
           a[i] += (obj2.acc[i] - obj1.acc[i]);
           a[i] = Math.max(a[i], .001)
-        }
+        
         // a = Math.sqrt(a);
         
       
       // Positive direction
       let td_plus = NaN;
       let td_minus = NaN;
-      let td = [0, 0];
-      for(let i=0; i<obj1.acc.length; i++){
+
+
         td_plus = (
           (-v[i] + (
                                     Math.sqrt(
@@ -150,103 +177,21 @@ export class ob{
               td_minus >= 0 && td_plus < 0 ? td_minus :
               td_plus >= 0 && td_minus >= 0 ? Math.min(td_plus, td_minus):
               // Number.isNaN(td_plus) || Number.isNaN(td_minus) ? NaN :
-              NaN;
-        
+              Infinity;
+              // if(td_minus < 0){
+              //   td[i] = 0;
+              // }
+
       }
 
 
       // if(obj1.id === 1){
       // console.log(td)
       // }
-      return Math.min(...td);
-    }
-    // Sideways trajectory projection - Calculates time at which 
-    // Ob will be at passed distance delta. It uses the quadratic
-    // formula to piece together the + and - results of the
-    // inverse distance function, projecting forward in time (returns
-    // the minimum positive output of the + and - curves, for the
-    // given distance input). When the sign of the distance
-    // is opposite to the velocity, the object will either
-    // change direction due to acceleration (i.e. change output
-    // curves) or never reach dd (td = infinity). Because we are
-    // detecting collisions, however, simply using the minimum
-    // positive result provides the correct output.
-    calcTD(dir: Dir, pos: number){
-      let dd = 0; 
-      let d = 0;
-      let v = 0;
-      let a = 0;
-      if(dir === Dir.x){
-        dd = pos - this.pos[0];
-        d = this.pos[0];
-        v = this.vel[0];
-        a = this.acc[0];
-      }
-      else if(dir === Dir.y){
-        dd = pos - this.pos[1];
-        d = this.pos[1];
-        v = this.vel[1];
-        a = this.acc[1];
-      }
-      else{
-        return NaN;
-      }
-      let td = 0;
-      // Positive direction
-        let td_plus = (
-          (-v - (
-                                    Math.sqrt(
-                                      (v**2) - (2*a * (-dd))
-                                    )
-                                ) 
-          )                    
-        / a
-        )
-      
-      // Negative direction
-        let td_minus = (
-          (-v + (
-                                    Math.sqrt(
-                                      (v**2) - (2*a * (-dd))
-                                    )
-                                ) 
-          )                    
-        / a
-        )
-        // Calculate minimum positive output
-        td = td_plus >= 0 && td_minus < 0 ? td_plus :
-              td_minus >= 0 && td_plus < 0 ? td_minus :
-              td_plus >= 0 && td_minus >= 0 ? Math.min(td_plus, td_minus):
-              Number.isNaN(td_plus) || Number.isNaN(td_minus) ? NaN :
-              NaN;
       return td;
     }
-
-    //******************** Check and Handle Collision ********************/
-  bounds(dir: Dir, T: number, bound: number){
-    const time_until_collision = this.calcTD(dir, bound );
     
-    if(Number.isNaN(time_until_collision)){
-      return false;
-    }
-    if(time_until_collision < T){
-      
-      this.move(time_until_collision)
-      this.accl(time_until_collision)
-      if(dir === Dir.x){
-        this.vel[0] = -this.vel[0]
-      }
-      else if(dir === Dir.y){
-        this.vel[1] = -this.vel[1]
-      }
-      
-      this.move(T - time_until_collision)
-      this.accl(T - time_until_collision)
-      return true;
-    }
-    return false;
-  }
-
+  
   
     move(t: number){
       for(let i=0; i<this.pos.length; i++){
@@ -282,7 +227,7 @@ export default function Ob(props:any) {
         width: obj.volume[0],
         height: obj.volume[1],
         border: 'solid 1px black',
-        // filter: `blur(${Math.sqrt(Math.abs(obj.xv+obj.yv)/500)}px)`
+        // filter: `blur(${Math.sqrt(Math.abs(obj.vel[0]+obj.vel[1])/3000)}px)`
       } as any;
       
   return (
