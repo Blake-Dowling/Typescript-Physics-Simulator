@@ -1,13 +1,17 @@
 import React from 'react'
 
+
 const SCREEN_HEIGHT = window.innerHeight;
 const SCREEN_WIDTH = window.innerWidth;
 export enum Dir{
   x, y
 }
 
-
+//************************************************************/
+//******************** Object class definition ********************/
+//************************************************************/
 export class ob{
+  //******************** Member Variables ********************/
     id: number;
     collided : boolean = false;
     pos: [number, number];
@@ -15,6 +19,7 @@ export class ob{
     acc: [number, number];
     mass: number;
     volume: [number, number];
+    //******************** Constructor ********************/
     constructor(id: number, pos: [number, number], vel: [number, number], acc: [number, number], mass: number, volume: [number, number]){
         this.id = id;
         this.pos = pos;
@@ -24,79 +29,88 @@ export class ob{
         this.volume = volume;
     }
 
-
+    //******************** Increments velocity ********************/
     accl(t: number){
       this.vel[0] += this.acc[0]*t;
       this.vel[1] += this.acc[1]*t;
     }
-
+    //******************** calcDDY ********************/
+    // Calculates distance to be travelled
+    // over passed time delta
     calcDDY(td: number){
       return ((0.5 * (this.acc[1] * (td ** 2))) + (this.vel[1] * td));
     }
+    //******************** Move ********************/
+    // For each dimension, change this object's
+    // position according to passed time delta
+    move(t: number){
+      for(let i=0; i<this.pos.length; i++){
+        this.pos[i] += (0.5 * (this.acc[i] * (t ** 2))) + (this.vel[i] * t);
+      }
+    }
+    //******************** Collision ********************/
     // Calculates and sets new velocities for obj1 and obj2 using
     // conservation of momentum and kinetic energy through
     // substitution and quadratic factoring.
     // Todo take angle as parameter
     collision(dir: Dir, obj1: ob, obj2: ob, col_dim: number){
-      let v1 = 0;
-      let v2 = 0;
-// console.log("1 - ",obj1.vel)
+      let v1 = 0; //stores object 1 working velocity
+      let v2 = 0; //stores object 2 working velocity
+      const mass1 = obj1.mass; //object 1 working mass
+      const mass2 = obj2.mass; //object 2 working mass
+      //******************** Perform calculations on each ********************/
+      //******************** dimension indepentently ********************/
       for(let i=col_dim; i<obj1.pos.length; i++){
-        v1 = obj1.vel[i];
-        v2 = obj2.vel[i];
-      
+        v1 = obj1.vel[i]; //get obj1 vel for current dimension, i
+        v2 = obj2.vel[i]; //get obj2 vel for current dimension, i
+        
+        const M = (mass1 * v1) + (mass2 * v2); //calculate net momentum
+        const K = (.5*mass1) * (v1**2) + (0.5*mass2) * (v2**2) //calculate net
+        //kinetic energy
 
-        const mass1 = obj1.mass;
-        const mass2 = obj2.mass;
-        const M = (mass1 * v1) + (mass2 * v2);
-        const K = (.5*mass1) * (v1**2) + (0.5*mass2) * (v2**2)
-      // M = -M
-      
-      let vf1_plus = (
-                  (
-                    2*M*mass1 + Math.sqrt(
-                                          ((-2*M*mass1)**2) - (4*(mass1**2 + mass1*mass2)*(-2*K*mass2 + (M**2)))
-                                          )
+        //Use the inverse of momentum and kinetic energy equations
+        //with v2 substituted to calculate the v1 values which
+        //conserve both momentum and kinetic energy.
+        //(one is the initial v1 value)
+        let vf1_plus = (
+                    (
+                      2*M*mass1 + Math.sqrt(
+                                            ((-2*M*mass1)**2) - (4*(mass1**2 + mass1*mass2)*(-2*K*mass2 + (M**2)))
+                                            )
+                    )
+                    / (2 * ((mass1**2) + mass1*mass2))
                   )
-                  / (2 * ((mass1**2) + mass1*mass2))
-                )
-                
-      let vf1_minus = (
-        (
-          2*M*mass1 - Math.sqrt(
-                                ((-2*M*mass1)**2) - (4*(mass1**2 + mass1*mass2)*(-2*K*mass2 + (M**2)))
-                                )
+        let vf1_minus = (
+          (
+            2*M*mass1 - Math.sqrt(
+                                  ((-2*M*mass1)**2) - (4*(mass1**2 + mass1*mass2)*(-2*K*mass2 + (M**2)))
+                                  )
+          )
+          / (2 * ((mass1**2) + mass1*mass2))
         )
-        / (2 * ((mass1**2) + mass1*mass2))
-      )
-      // if(obj1.id === 2){
-      //   console.log(obj1.vel[i])
-      //   console.log(vf1_plus,vf1_minus)
-      // }
-      let vf1 = vf1_plus;
-      // Select side of quadratic opposite to starting velocity
-      if(Math.abs(vf1 - obj1.vel[i]) < 0.0001){
-        vf1 = vf1_minus;
-      } 
-      let vf2 = (M - (mass1*vf1)) / mass2
-      // console.log("-",vf1)
-      // console.log(v1, v2)
-      // console.log(vf1-v1,vf2-v2)
-      obj1.vel[i] = vf1;
-      obj2.vel[i] = vf2;
-      
+        let vf1 = vf1_plus; 
+        // Select side of quadratic opposite to starting velocity
+        if(Math.abs(vf1 - obj1.vel[i]) < 0.0001){
+          vf1 = vf1_minus;
+        } 
+        let vf2 = (M - (mass1*vf1)) / mass2 
+        // console.log("-",vf1)
+        // console.log(v1, v2)
+        // console.log(vf1-v1,vf2-v2)
+        obj1.vel[i] = vf1; //Assign new velocity for obj1 in dimension i
+        obj2.vel[i] = vf2; //Assign new velocity for obj2 in dimension i
+      }
     }
-    }
+    //******************** calcTD2 ********************/
+    // Calculate time delta until collision
+    // between two objects
     calcTD2(obj1: ob, obj2: ob){
-
-
-        let d = [0, 0];
+        let d = [0, 0]; 
         let v = [0, 0];
         let a = [0, 0];
         let td = [0, 0];
-        // Calculate distance magnitude
+        //******************** Calculate distance ********************/
         for(let i=0; i<obj1.pos.length; i++){
-          
           //obj 2 is forward
           if(obj2.pos[i] >= obj1.pos[i]){
             // console.log(obj2.id)
@@ -104,100 +118,71 @@ export class ob{
             let backward_obj_front = (obj1.pos[i] + (0.5*obj1.volume[i]))
             //distance from top/back
             d[i] += ( forward_obj_back - backward_obj_front );
-            
-
+            //if obj1's front is farther than obj2's back
             if(d[i] <= 0 ){
               td[i] = 0;
-
               continue;
             }
           }
-          
           //obj 2 is behind
           else if(obj2.pos[i] < obj1.pos[i]){
-            
             let backward_obj_front = (obj2.pos[i] + (0.5*obj2.volume[i]))
             let forward_obj_back = (obj1.pos[i] - (0.5*obj1.volume[i]))
             //distance from top/back
             d[i] += (forward_obj_back - backward_obj_front );
-
+            //if obj2's front is farther than obj1's back
             if(d[i] <= 0 ){
               td[i] = 0;
               continue;
             }
           }
-          // console.log(i)
-        
-        // d = Math.sqrt(d);
-        if(this.id===1){
-          // console.log(obj1.pos)
-          // console.log(( (obj2.pos[1] - (0.5*obj2.volume[1])) - (obj1.pos[1] + (0.5*obj1.volume[1])) ));
-          // console.log(( (obj2.pos[1] + (0.5*obj2.volume[1])) - (obj1.pos[1] - (0.5*obj1.volume[1])) ));
-        }
- 
+          //relative velocity
           v[i] += (obj2.vel[i] - obj1.vel[i]);
-        
-        // v = Math.sqrt(v);
-
- 
+          //relative acceleration
           a[i] += (obj2.acc[i] - obj1.acc[i]);
-          a[i] = Math.max(a[i], .001)
-        
-        // a = Math.sqrt(a);
-        
-      
-      // Positive direction
-      let td_plus = NaN;
-      let td_minus = NaN;
-
-
-        td_plus = (
-          (-v[i] + (
-                                    Math.sqrt(
-                                      (v[i]**2) - (2*a[i] * (d[i]))
-                                    )
-                                ) 
-          )                    
-        / a[i]
-        )
-        // Negative direction
-        td_minus = (
-          (-v[i] - (
+          a[i] = Math.max(a[i], .001) //prevent div by 0
+          // Positive direction
+          let td_plus = NaN;
+          let td_minus = NaN;
+          //******************** inverse distance formula ********************/
+          //******************** get time until relative distance = 0 ********************/
+          td_plus = (
+            (-v[i] + (
                                       Math.sqrt(
                                         (v[i]**2) - (2*a[i] * (d[i]))
                                       )
                                   ) 
-          )                    
-        / a[i]
-        )
+            )                    
+          / a[i]
+          )
+          // Negative direction
+          td_minus = (
+            (-v[i] - (
+                                        Math.sqrt(
+                                          (v[i]**2) - (2*a[i] * (d[i]))
+                                        )
+                                    ) 
+            )                    
+          / a[i]
+          )
       
-      // console.log(td_plus, td_minus)
-        // Calculate minimum positive output
-        td[i] = td_plus >= 0 && td_minus < 0 ? td_plus :
-              td_minus >= 0 && td_plus < 0 ? td_minus :
-              td_plus >= 0 && td_minus >= 0 ? Math.min(td_plus, td_minus):
-              // Number.isNaN(td_plus) || Number.isNaN(td_minus) ? NaN :
-              Infinity;
-              // if(td_minus < 0){
-              //   td[i] = 0;
-              // }
-
-      }
-
-
-      // if(obj1.id === 1){
-      // console.log(td)
-      // }
+          // console.log(td_plus, td_minus)
+          // Calculate minimum positive output
+          td[i] = td_plus >= 0 && td_minus < 0 ? td_plus :
+                td_minus >= 0 && td_plus < 0 ? td_minus :
+                td_plus >= 0 && td_minus >= 0 ? Math.min(td_plus, td_minus):
+                // Number.isNaN(td_plus) || Number.isNaN(td_minus) ? NaN :
+                Infinity;
+                // if(td_minus < 0){
+                //   td[i] = 0;
+                // }
+        }
       return td;
     }
     
   
   
-    move(t: number){
-      for(let i=0; i<this.pos.length; i++){
-        this.pos[i] += (0.5 * (this.acc[i] * (t ** 2))) + (this.vel[i] * t);
-      }
-    }
+
 
     // calcMag(mag: ob){
     //   //F = k * [(q1*q2)/r**2]
@@ -208,7 +193,7 @@ export class ob{
     //   } catch{
 
     //   }
-    }
+  }
     
 
 //******************** Ob Component Styling and Rendering ********************/
